@@ -525,6 +525,240 @@ const ALL_TASKS=[
     }
   },
 
+  // ══ УРОК 2 — Анализ конкурентов ══════════════════════════════════
+  {
+    id:'t-research-competitors',type:'research',clientId:'marina',
+    week:1,title:'Анализ конкурентов Аромы',
+    desc:'Изучи 4 конкурирующих аккаунта и ответь на вопросы. Кто лидер? Где пробелы?',
+    icon:'🔍',reward:{money:4500,xp:60,rep:16},deadline:3,
+    data:{
+      cards:[
+        {name:'@coffee_simf',emoji:'☕',type:'Прямой конкурент',color:'#7c3aed',
+         stats:[{label:'Подписчиков',val:'12 400'},{label:'ER',val:'4.2%'},{label:'Постов/нед',val:'5-6'},{label:'Reels',val:'Да (2/нед)'}],
+         note:'Сильный аккаунт: живые Reels за кулисами, регулярный контент. Слабость — нет образовательных постов о кофе.'},
+        {name:'@cafenova_krm',emoji:'🏠',type:'Прямой конкурент',color:'#2563eb',
+         stats:[{label:'Подписчиков',val:'3 100'},{label:'ER',val:'1.1%'},{label:'Постов/нед',val:'1-2'},{label:'Reels',val:'Нет'}],
+         note:'Слабый аккаунт: редкие посты, только фото блюд. Аудитория не вовлечена. Хорошая возможность обойти.'},
+        {name:'@barista_life_92',emoji:'👨‍🍳',type:'Бариста-блогер',color:'#059669',
+         stats:[{label:'Подписчиков',val:'28 000'},{label:'ER',val:'6.8%'},{label:'Постов/нед',val:'3-4'},{label:'Reels',val:'Да (3/нед)'}],
+         note:'Не прямой конкурент, но перехватывает аудиторию. Фишка — обучающий контент о методах заварки.'},
+        {name:'@sweetcafe_simf',emoji:'🍰',type:'Смежная ниша',color:'#d97706',
+         stats:[{label:'Подписчиков',val:'7 800'},{label:'ER',val:'3.5%'},{label:'Постов/нед',val:'4-5'},{label:'Reels',val:'Редко'}],
+         note:'Кондитерская. Пересекающаяся аудитория. Сильна в Stories — ежедневный контент, высокая вовлечённость.'},
+      ],
+      questions:[
+        {
+          id:'q1',q:'Кто из конкурентов самый сильный в Instagram по вовлечённости (ER)?',
+          opts:[{id:'a',label:'@coffee_simf (ER 4.2%)'},{id:'b',label:'@barista_life_92 (ER 6.8%)'},{id:'c',label:'@sweetcafe_simf (ER 3.5%)'},{id:'d',label:'@cafenova_krm (ER 1.1%)'}],
+          correctId:'b',
+          explanation:'Бариста-блогер @barista_life_92 имеет ER 6.8% — самый высокий. Его секрет: обучающий контент, который сохраняют и пересылают.'
+        },
+        {
+          id:'q2',q:'Какую нишу НЕ занял ни один конкурент, и которую Арома может захватить?',
+          opts:[{id:'a',label:'Фото готовых напитков'},{id:'b',label:'Reels за кулисами баристы'},{id:'c',label:'Образовательный контент о сортах и методах заварки кофе'},{id:'d',label:'Сторис с акциями'}],
+          correctId:'c',
+          explanation:'@cafenova_krm и прямые конкуренты не делают образовательный контент о кофе. @barista_life_92 делает, но он не локальная кофейня — у Аромы есть шанс занять эту нишу + атмосфера конкретного места.'
+        },
+        {
+          id:'q3',q:'Главная слабость @cafenova_krm, которую должна использовать Арома?',
+          opts:[{id:'a',label:'У них нет скидок'},{id:'b',label:'Редкий контент + низкое вовлечение — аудитория не активна'},{id:'c',label:'Плохой дизайн профиля'},{id:'d',label:'Нет таргетированной рекламы'}],
+          correctId:'b',
+          explanation:'1-2 поста в неделю и ER 1.1% означают: аудитория не вовлечена. Арома с системным контентом (5+ постов/нед + Reels) быстро обойдёт такого конкурента.'
+        },
+        {
+          id:'q4',q:'Чему нужно научиться у @sweetcafe_simf для Stories?',
+          multi:true,
+          correctIds:['a','c'],
+          opts:[{id:'a',label:'Публиковать Stories каждый день'},{id:'b',label:'Добавить рекламу в Stories'},{id:'c',label:'Создавать вовлекающий Stories-контент (опросы, вопросы)'},{id:'d',label:'Снимать только еду'}],
+          explanation:'@sweetcafe_simf силён именно в ежедневных Stories с высокой вовлечённостью. Это достигается регулярностью + интерактивными форматами (опросы, реакции, вопросы).'
+        },
+      ]
+    }
+  },
+
+  // ══ УРОК 3 — Целевая аудитория / Бриф ════════════════════════════
+  {
+    id:'t-research-brief',type:'research',clientId:'marina',
+    week:1,title:'Составь портрет ЦА Аромы',
+    desc:'Заполни бриф клиента и определи целевую аудиторию кофейни по шаблону из курса',
+    icon:'👥',reward:{money:3500,xp:50,rep:14},deadline:3,
+    data:{
+      brief:'Кофейня «Арома», Симферополь. Средний чек 350₽. Атмосфера — уютная, камерная, для тех кто ценит качество. Работают 7 дней, утром и вечером. Есть авторские напитки и сезонное меню. Хотят привлечь новых гостей через Instagram и повысить узнаваемость.',
+      questions:[
+        {
+          id:'q1',q:'Какое описание лучше всего подходит для основного сегмента ЦА кофейни?',
+          opts:[
+            {id:'a',label:'Мужчины 40-55, строители и технические специалисты, ищут дешёвый обед'},
+            {id:'b',label:'Женщины и мужчины 22-35, студенты и молодые специалисты, ценят атмосферу и качество, активны в Instagram'},
+            {id:'c',label:'Пенсионеры 60+, ищут тихое место для встреч с друзьями'},
+            {id:'d',label:'Школьники 14-17, хотят место для учёбы с Wi-Fi'},
+          ],
+          correctId:'b',
+          explanation:'Средний чек 350₽ + авторские напитки + атмосфера = ЦА 22-35 лет, ценящих качество и готовых платить за опыт. Именно эта аудитория активна в Instagram и делится впечатлениями.'
+        },
+        {
+          id:'q2',q:'Какие БОЛИ этой аудитории должен закрывать контент кофейни?',
+          multi:true,
+          correctIds:['b','c'],
+          opts:[
+            {id:'a',label:'Нет денег на кофе'},
+            {id:'b',label:'Хочется уютного места вдали от офисного шума'},
+            {id:'c',label:'Нужно место где можно поработать или встретиться с другом'},
+            {id:'d',label:'Ищут быстрый фастфуд'},
+          ],
+          explanation:'Ключевые боли: желание уюта и качества (не фастфуд) + потребность в комфортном месте для работы/встреч. Именно на эти триггеры должен реагировать контент.'
+        },
+        {
+          id:'q3',q:'Какой формат контента лучше всего попадает в желания этой ЦА?',
+          opts:[
+            {id:'a',label:'Прайс-листы и акции со скидками'},
+            {id:'b',label:'Атмосферные Reels + "закулисье" баристы + образовательный контент о кофе'},
+            {id:'c',label:'Репосты новостей города'},
+            {id:'d',label:'Фото одинаковых напитков каждый день'},
+          ],
+          correctId:'b',
+          explanation:'ЦА 22-35 хочет: атмосферу (попасть туда), историю (полюбить место), знания (стать знатоком кофе). Именно это закрывают атмосферные Reels + BTS + образовательный контент.'
+        },
+        {
+          id:'q4',q:'Когда лучше всего публиковать контент для этой ЦА?',
+          opts:[
+            {id:'a',label:'Будни 6:00-7:00 утра (до работы)'},
+            {id:'b',label:'Будни 12:00-14:00 и 18:00-21:00, выходные 10:00-13:00'},
+            {id:'c',label:'Ночью 23:00-01:00'},
+            {id:'d',label:'Только воскресенье вечером'},
+          ],
+          correctId:'b',
+          explanation:'Студенты и офисные сотрудники проверяют Instagram в обеденный перерыв (12-14) и вечером после работы (18-21). В выходные — утром за завтраком (10-13). Это самые активные окна для кофейни.'
+        },
+        {
+          id:'q5',q:'Какой тон (TOV) выбрать для аккаунта кофейни?',
+          opts:[
+            {id:'a',label:'Официальный и строгий: "Приглашаем Вас посетить наше заведение"'},
+            {id:'b',label:'Агрессивный и рекламный: "СКИДКА 50%! ТОЛЬКО СЕГОДНЯ!"'},
+            {id:'c',label:'Тёплый и дружелюбный: как разговор с другом за чашкой кофе'},
+            {id:'d',label:'Нейтральный информационный: только факты о напитках'},
+          ],
+          correctId:'c',
+          explanation:'Аудитория 22-35, ценящая атмосферу, реагирует на живой человеческий голос. Тёплый тон формирует ощущение "это мои люди" — ключевой триггер для возвращения и рекомендаций.'
+        },
+      ]
+    }
+  },
+
+  // ══ УРОК 8 — Первый клиент / КП ══════════════════════════════════
+  {
+    id:'t-kp-builder',type:'kp',clientId:'dmitry',
+    week:3,title:'Составь КП для фитнес-клуба',
+    desc:'Собери правильное коммерческое предложение для Дмитрия. Выбери лучший вариант каждого блока.',
+    icon:'💼',reward:{money:7000,xp:80,rep:22},deadline:4,
+    data:{
+      clientDesc:'Фитнес-клуб «Энергия», Дмитрий. Клиент смотрит твоё КП — первое впечатление решает всё.',
+      lesson:'Хорошее КП начинается с анализа клиента, а не с рассказа о себе. Конкретика побеждает общие слова.',
+      blocks:[
+        {
+          id:'b1',label:'1. Открывающий блок',
+          opts:[
+            {id:'a',text:'Здравствуйте! Меня зовут Алекс, я SMM-специалист с опытом работы. Хочу предложить вам услуги по ведению социальных сетей.'},
+            {id:'b',text:'Изучил аккаунт @energia_fit. Вижу: 890 подписчиков, посты 2-3 раза в неделю, Reels нет. При этом у конкурента @fitlife_gym со схожим залом — 8 400 подписчиков и Reels набирают 15-30к просмотров.'},
+          ],
+          correctId:'b',
+          explanation:'КП начинается с анализа ИХ ситуации — не с рассказа о себе. Клиент должен увидеть: ты изучил его аккаунт, понимаешь проблему конкретно.'
+        },
+        {
+          id:'b2',label:'2. Что предлагаю',
+          opts:[
+            {id:'a',text:'Буду вести ваш Instagram профессионально. Делаю качественный контент, работаю с аудиторией, провожу аналитику. Опыт работы с разными нишами.'},
+            {id:'b',text:'Предлагаю: Reels 3 раза в неделю (тренировки, трансформации, советы), ежедневные Stories, контент-план на месяц, аналитика раз в 2 недели. Цель — органический рост до 3 000 подписчиков за 2 месяца.'},
+          ],
+          correctId:'b',
+          explanation:'Конкретный список услуг + измеримая цель = клиент понимает что покупает. Общие слова ("качественный контент") не дают клиенту ощущения уверенности.'
+        },
+        {
+          id:'b3',label:'3. Стоимость',
+          opts:[
+            {id:'a',text:'Стоимость: от 15 000 ₽ в месяц. Точная цена после обсуждения деталей.'},
+            {id:'b',text:'Пакет «Стандарт» — 28 000 ₽/мес. Входит: Reels 3/нед, Stories ежедневно, контент-план, аналитика. Оплата: 50% в начале месяца, 50% после отчёта.'},
+          ],
+          correctId:'b',
+          explanation:'"От 15к" создаёт неопределённость и снижает доверие. Конкретная сумма + что именно входит + порядок оплаты = прозрачность, которая продаёт.'
+        },
+        {
+          id:'b4',label:'4. Следующий шаг',
+          opts:[
+            {id:'a',text:'Если вас заинтересовало моё предложение, напишите мне. Готов ответить на ваши вопросы и обсудить сотрудничество.'},
+            {id:'b',text:'Следующий шаг: созвон на 20 минут — обсудим детали и начнём в понедельник. Напишите когда удобно, я подстроюсь под ваше время.'},
+          ],
+          correctId:'b',
+          explanation:'Один чёткий призыв к действию + инициатива ("я подстроюсь") снижает барьер. Размытое "напишите если заинтересовало" оставляет клиента в неопределённости — большинство не пишут.'
+        },
+        {
+          id:'b5',label:'5. Работа с возражением "Дорого"',
+          opts:[
+            {id:'a',text:'Понимаю, что цена кажется высокой. Могу сделать скидку 20% на первый месяц, чтобы вы попробовали.'},
+            {id:'b',text:'Понимаю. Давайте подберём формат под ваш бюджет — начнём с базового пакета (Reels + контент-план, без ежедневных Stories) за 18 000₽. Через месяц увидите результат и решите расширять.'},
+          ],
+          correctId:'b',
+          explanation:'Скидка на тот же объём обесценивает тебя как специалиста. Правильно: сократи пакет, сохрани ценность. Клиент получает меньше за меньше — это честно и профессионально.'
+        },
+      ]
+    }
+  },
+
+  // ══ УРОК 9 — ИИ в SMM ════════════════════════════════════════════
+  {
+    id:'t-ai-quiz',type:'ai_quiz',clientId:'marina',
+    week:3,title:'Выбери правильный ИИ-инструмент',
+    desc:'6 задач из реальной работы SMM-специалиста — найди лучший ИИ-инструмент для каждой',
+    icon:'🧠',reward:{money:4000,xp:55,rep:14},deadline:3,
+    data:{
+      lesson:'ИИ — ускоритель, не замена. Специалист с ИИ-стеком делает за 35-45 минут то, на что раньше уходило 2-3 часа.',
+      questions:[
+        {
+          id:'q1',scenario:'Марина прислала видео 2 минуты без субтитров',
+          task:'Добавить субтитры на русском за 5 минут',
+          opts:[{id:'a',emoji:'✍️',label:'Писать вручную'},{id:'b',emoji:'🎬',label:'CapCut AI'},{id:'c',emoji:'🖼️',label:'Canva'},{id:'d',emoji:'🔎',label:'LiveDune'}],
+          correctId:'b',
+          explanation:'CapCut AI: автоматические субтитры на русском за 30 секунд. Правишь ошибки 3-5 минут. Без него — минимум 30 минут ручной работы.'
+        },
+        {
+          id:'q2',scenario:'Нужно написать 5 вариантов хука для поста о кофейне',
+          task:'Сгенерировать крючки быстро',
+          opts:[{id:'a',emoji:'🤖',label:'ChatGPT'},{id:'b',emoji:'📊',label:'Popsters'},{id:'c',emoji:'🎬',label:'DaVinci'},{id:'d',emoji:'📅',label:'SMMplanner'}],
+          correctId:'a',
+          explanation:'ChatGPT (или Claude): задаёшь контекст (ниша, ЦА, тон) — получаешь 10 вариантов крючков за 1 минуту. Выбираешь лучший или комбинируешь.'
+        },
+        {
+          id:'q3',scenario:'Есть фото баристы, нужно убрать загромождённый фон',
+          task:'Вырезать фон для подстановки нового',
+          opts:[{id:'a',emoji:'🤖',label:'ChatGPT'},{id:'b',emoji:'🎵',label:'Suno AI'},{id:'c',emoji:'✂️',label:'Remove.bg'},{id:'d',emoji:'📊',label:'LiveDune'}],
+          correctId:'c',
+          explanation:'Remove.bg: загружаешь фото — через 3 секунды чистый вырез без фона. Бесплатно до 50 фото в месяц. Потом вставляешь в нужный фон в Canva.'
+        },
+        {
+          id:'q4',scenario:'Дмитрий прислал статистику за месяц — кучу цифр',
+          task:'Найти паттерны и написать вывод для отчёта',
+          opts:[{id:'a',emoji:'🎬',label:'CapCut'},{id:'b',emoji:'🤖',label:'Claude / ChatGPT'},{id:'c',emoji:'🖼️',label:'Midjourney'},{id:'d',emoji:'✂️',label:'Remove.bg'}],
+          correctId:'b',
+          explanation:'ChatGPT или Claude: вставляешь цифры → просишь найти паттерны → получаешь готовый анализ с рекомендациями. Готовый текст для клиентского отчёта правишь 5 минут.'
+        },
+        {
+          id:'q5',scenario:'Нужна атмосферная иллюстрация для поста о кофе — уют, тепло',
+          task:'Создать уникальную картинку без фотосессии',
+          opts:[{id:'a',emoji:'🎨',label:'Midjourney'},{id:'b',emoji:'📅',label:'SMMplanner'},{id:'c',emoji:'📊',label:'Popsters'},{id:'d',emoji:'📝',label:'Notion'}],
+          correctId:'a',
+          explanation:'Midjourney генерирует атмосферные иллюстрации по текстовому описанию. Пример: "cozy coffee shop interior, warm lighting, morning, photography style" — 4 варианта за 30 секунд.'
+        },
+        {
+          id:'q6',scenario:'Нужен контент-план на месяц для кофейни — 20 публикаций',
+          task:'Составить черновик быстро, потом доработать',
+          opts:[{id:'a',emoji:'📷',label:'InShot'},{id:'b',emoji:'🤖',label:'ChatGPT + промпт'},{id:'c',emoji:'🎬',label:'DaVinci'},{id:'d',emoji:'🔍',label:'Яндекс'}],
+          correctId:'b',
+          explanation:'ChatGPT с правильным промптом (роль + ниша + рубрики + форматы) делает черновик 20 публикаций за 2 минуты. Ты правишь и адаптируешь 20 минут — вместо составления с нуля за 2 часа.'
+        },
+      ]
+    }
+  },
+
   // ── CALENDAR tasks ───────────────────────────────
   {
     id:'t-calendar-1',type:'calendar',clientId:'alina',
@@ -714,18 +948,21 @@ const Hud=({gs,screen,onNav,onShowSave})=>{
 
 // ─── OFFICE ──────────────────────────────────────────────────────
 const ZONES=[
+  {id:'research',icon:'🔍',label:'Исследование',desc:'Конкуренты и аудитория',color:'#0e7490'},
   {id:'chat',icon:'💬',label:'Мессенджер',desc:'Переписка с клиентами',color:'#059669'},
   {id:'write',icon:'📝',label:'Текстовые задания',desc:'Стратегии, планы, идеи',color:'#0891b2'},
+  {id:'kp',icon:'💼',label:'Продажи & КП',desc:'Коммерческие предложения',color:'#b45309'},
   {id:'video_edit',icon:'🎬',label:'Монтажная',desc:'Редактор видео',color:'#7c3aed'},
   {id:'analytics',icon:'📊',label:'Аналитика',desc:'Дашборды и отчёты',color:'#2563eb'},
   {id:'ai_content',icon:'🤖',label:'AI Studio',desc:'Генерация контента',color:'#d97706'},
+  {id:'ai_quiz',icon:'🧠',label:'ИИ-инструменты',desc:'Квиз по AI-инструментам',color:'#7c3aed'},
   {id:'calendar',icon:'📅',label:'Планирование',desc:'Контент-календарь',color:'#ec4899'},
   {id:'exam',icon:'🎓',label:'Финальный экзамен',desc:'Новый клиент · Сертификат',color:'#f59e0b',exam:true},
 ];
 
 const Office=({gs,tasks,onNav})=>{
   const tasksByZone={};
-  tasks.forEach(t=>{const z=t.type==='video_edit'?'video_edit':t.type==='ai_content'?'ai_content':t.type;if(!tasksByZone[z])tasksByZone[z]=[];tasksByZone[z].push(t);});
+  tasks.forEach(t=>{const z=t.type;if(!tasksByZone[z])tasksByZone[z]=[];tasksByZone[z].push(t);});
   const mob=useIsMobile();
   return(
     <div style={{flex:1,display:'flex',flexDirection:'column',padding:mob?14:24,gap:mob?12:20,overflow:'auto'}} className="scroll-y">
@@ -739,7 +976,7 @@ const Office=({gs,tasks,onNav})=>{
           const hasTasks=zoneTasks.length>0;
           if(z.exam){return(
             <div key={z.id} onClick={()=>onNav(z.id)} className="office-zone glow-anim"
-              style={{borderColor:'rgba(251,191,36,.5)',background:'rgba(251,191,36,.06)',cursor:'pointer',gridColumn:mob?'span 2':'span 3'}}>
+              style={{borderColor:'rgba(251,191,36,.5)',background:'rgba(251,191,36,.06)',cursor:'pointer',gridColumn:mob?'span 2':'span 1 / -1'}}>
               <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:mob?'wrap':'nowrap'}}>
                 <span style={{fontSize:mob?36:52}}>{z.icon}</span>
                 <div style={{flex:1,minWidth:0}}>
@@ -1988,6 +2225,297 @@ const WriteTask=({task,onComplete,onBack,onFlag})=>{
   );
 };
 
+// ─── RESEARCH SCREEN (Уроки 2+3: конкуренты и ЦА) ───────────────
+const ResearchScreen=({task,onComplete,onBack})=>{
+  const mob=useIsMobile();
+  const d=task.data;
+  const [answers,setAnswers]=useState({});
+  const [submitted,setSubmitted]=useState(false);
+  const [score,setScore]=useState(0);
+  const notify=useNotif();
+
+  const handleAnswer=(qid,val,multi)=>{
+    if(submitted)return;
+    if(multi){
+      setAnswers(a=>{
+        const cur=a[qid]||[];
+        return{...a,[qid]:cur.includes(val)?cur.filter(x=>x!==val):[...cur,val]};
+      });
+    } else {
+      setAnswers(a=>({...a,[qid]:val}));
+    }
+  };
+
+  const submit=()=>{
+    let correct=0;
+    d.questions.forEach(q=>{
+      if(q.multi){
+        const sel=answers[q.id]||[];
+        const right=q.correctIds||[];
+        if(sel.length===right.length&&right.every(r=>sel.includes(r)))correct++;
+      } else {
+        if(answers[q.id]===q.correctId)correct++;
+      }
+    });
+    const pct=Math.round(correct/d.questions.length*100);
+    setScore(pct);
+    setSubmitted(true);
+    notify(`${correct}/${d.questions.length} правильных ответов · +${task.reward.xp} XP`,'success','🔍');
+    setTimeout(()=>onComplete(task,pct/100),1500);
+  };
+
+  const allAnswered=d.questions.every(q=>q.multi?(answers[q.id]||[]).length>0:answers[q.id]!==undefined);
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      <div style={{padding:'12px 20px',borderBottom:'1px solid rgba(255,255,255,.07)',display:'flex',gap:12,alignItems:'center'}}>
+        <span style={{fontSize:28}}>{task.icon}</span>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:700,color:'#fff',fontSize:15}}>{task.title}</div>
+          <div style={{fontSize:12,color:'#64748b'}}>{task.desc}</div>
+        </div>
+        <button className="btn btn-primary" onClick={submit} disabled={submitted||!allAnswered}>
+          ✅ Проверить
+        </button>
+      </div>
+      <div className="scroll-y" style={{flex:1,padding:mob?12:20,display:'flex',flexDirection:mob?'column':'row',gap:16,overflow:'auto'}}>
+        {/* Info cards */}
+        <div style={{flex:1,display:'flex',flexDirection:'column',gap:12}}>
+          {d.cards&&d.cards.map((c,i)=>(
+            <div key={i} className="card" style={{padding:16,borderColor:c.color+'40',background:c.color+'08'}}>
+              <div style={{display:'flex',gap:10,alignItems:'flex-start',marginBottom:8}}>
+                <span style={{fontSize:24}}>{c.emoji}</span>
+                <div>
+                  <div style={{fontWeight:700,color:'#fff',fontSize:13}}>{c.name}</div>
+                  <div style={{fontSize:11,color:c.color,fontWeight:600}}>{c.type}</div>
+                </div>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
+                {c.stats.map((s,j)=>(
+                  <div key={j} style={{background:'rgba(255,255,255,.04)',borderRadius:8,padding:'6px 10px'}}>
+                    <div style={{fontSize:10,color:'#64748b'}}>{s.label}</div>
+                    <div style={{fontSize:13,fontWeight:700,color:'#e2e8f0'}}>{s.val}</div>
+                  </div>
+                ))}
+              </div>
+              {c.note&&<div style={{marginTop:8,fontSize:11,color:'#94a3b8',fontStyle:'italic'}}>{c.note}</div>}
+            </div>
+          ))}
+          {d.brief&&(
+            <div className="card" style={{padding:16,borderColor:'rgba(167,139,250,.3)'}}>
+              <div style={{fontSize:11,fontWeight:700,color:'#a78bfa',marginBottom:8}}>📋 БРИФ КЛИЕНТА</div>
+              <div style={{fontSize:12,color:'#94a3b8',lineHeight:1.7}}>{d.brief}</div>
+            </div>
+          )}
+        </div>
+        {/* Questions */}
+        <div style={{width:mob?'100%':340,display:'flex',flexDirection:'column',gap:14,flexShrink:0}}>
+          <div style={{fontSize:12,fontWeight:700,color:'#a78bfa',letterSpacing:.5}}>ВОПРОСЫ</div>
+          {d.questions.map((q,qi)=>{
+            const sel=q.multi?(answers[q.id]||[]):answers[q.id];
+            const isCorrect=submitted&&(q.multi
+              ?(sel.length===(q.correctIds||[]).length&&(q.correctIds||[]).every(r=>sel.includes(r)))
+              :sel===q.correctId);
+            return(
+              <div key={q.id} className="card" style={{padding:14,borderColor:submitted?(isCorrect?'rgba(52,211,153,.4)':'rgba(248,113,113,.4)'):'rgba(255,255,255,.08)'}}>
+                <div style={{fontSize:12,fontWeight:700,color:'#fff',marginBottom:10}}>{qi+1}. {q.q}</div>
+                {q.multi&&<div style={{fontSize:10,color:'#64748b',marginBottom:8}}>Выбери {(q.correctIds||[]).length} варианта</div>}
+                <div style={{display:'flex',flexDirection:'column',gap:6}}>
+                  {q.opts.map((o,oi)=>{
+                    const isSelected=q.multi?sel.includes(o.id):sel===o.id;
+                    const showCorrect=submitted&&(q.multi?(q.correctIds||[]).includes(o.id):o.id===q.correctId);
+                    const showWrong=submitted&&isSelected&&!showCorrect;
+                    return(
+                      <div key={o.id} onClick={()=>handleAnswer(q.id,o.id,q.multi)}
+                        style={{padding:'8px 12px',borderRadius:8,cursor:submitted?'default':'pointer',fontSize:12,transition:'all .15s',
+                          background:showCorrect?'rgba(52,211,153,.12)':showWrong?'rgba(248,113,113,.1)':isSelected?'rgba(124,58,237,.15)':'rgba(255,255,255,.03)',
+                          border:`1px solid ${showCorrect?'rgba(52,211,153,.5)':showWrong?'rgba(248,113,113,.4)':isSelected?'rgba(124,58,237,.5)':'rgba(255,255,255,.08)'}`,
+                          color:showCorrect?'#34d399':showWrong?'#f87171':isSelected?'#a78bfa':'#94a3b8'}}>
+                        {showCorrect?'✅ ':showWrong?'❌ ':isSelected?'◉ ':'○ '}{o.label}
+                      </div>
+                    );
+                  })}
+                </div>
+                {submitted&&<div style={{marginTop:8,fontSize:11,color:isCorrect?'#34d399':'#f87171',fontStyle:'italic'}}>{q.explanation}</div>}
+              </div>
+            );
+          })}
+          {submitted&&(
+            <div className="card slide-up" style={{padding:14,borderColor:'rgba(167,139,250,.4)',background:'rgba(124,58,237,.08)',textAlign:'center'}}>
+              <div style={{fontSize:24,marginBottom:6}}>{score>=80?'🏆':score>=60?'👍':'📚'}</div>
+              <div style={{fontWeight:700,color:'#a78bfa',fontSize:15,marginBottom:4}}>{score}% правильных</div>
+              <div style={{fontSize:12,color:'#64748b'}}>{score>=80?'Отличный анализ! Ты знаешь как читать рынок.':score>=60?'Хороший результат! Продолжай анализировать.':'Изучи ещё раз урок и попробуй снова.'}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── KP BUILDER SCREEN (Урок 8: первый клиент) ────────────────────
+const KPBuilderScreen=({task,onComplete,onBack})=>{
+  const mob=useIsMobile();
+  const d=task.data;
+  const [choices,setChoices]=useState({});
+  const [submitted,setSubmitted]=useState(false);
+  const notify=useNotif();
+
+  const choose=(blockId,optId)=>{if(!submitted)setChoices(c=>({...c,[blockId]:optId}));};
+
+  const submit=()=>{
+    let correct=0;
+    d.blocks.forEach(b=>{if(choices[b.id]===b.correctId)correct++;});
+    const pct=Math.round(correct/d.blocks.length*100);
+    setSubmitted(true);
+    notify(`КП собрано! ${correct}/${d.blocks.length} блоков правильно · +${task.reward.xp} XP`,'success','💼');
+    setTimeout(()=>onComplete(task,pct/100),1500);
+  };
+
+  const allDone=d.blocks.every(b=>choices[b.id]);
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      <div style={{padding:'12px 20px',borderBottom:'1px solid rgba(255,255,255,.07)',display:'flex',gap:12,alignItems:'center'}}>
+        <span style={{fontSize:28}}>{task.icon}</span>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:700,color:'#fff',fontSize:15}}>{task.title}</div>
+          <div style={{fontSize:12,color:'#64748b'}}>{task.desc}</div>
+        </div>
+        <button className="btn btn-primary" onClick={submit} disabled={submitted||!allDone}>
+          📤 Отправить КП
+        </button>
+      </div>
+      <div className="scroll-y" style={{flex:1,padding:mob?12:20}}>
+        <div style={{maxWidth:780,margin:'0 auto'}}>
+          <div style={{fontSize:12,color:'#64748b',marginBottom:16,background:'rgba(251,191,36,.07)',border:'1px solid rgba(251,191,36,.2)',borderRadius:10,padding:'10px 14px'}}>
+            📋 <strong style={{color:'#fbbf24'}}>Клиент:</strong> {d.clientDesc} — Собери правильное КП: выбери лучший вариант для каждого блока.
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:16}}>
+            {d.blocks.map((b,bi)=>{
+              const sel=choices[b.id];
+              const correct=submitted&&sel===b.correctId;
+              const wrong=submitted&&sel&&sel!==b.correctId;
+              return(
+                <div key={b.id} className="card" style={{padding:16,borderColor:submitted?(correct?'rgba(52,211,153,.4)':wrong?'rgba(248,113,113,.35)':'rgba(255,255,255,.08)'):'rgba(255,255,255,.08)'}}>
+                  <div style={{display:'flex',gap:10,alignItems:'center',marginBottom:12}}>
+                    <div style={{width:28,height:28,borderRadius:8,background:'rgba(124,58,237,.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:800,color:'#a78bfa',flexShrink:0}}>{bi+1}</div>
+                    <div style={{fontWeight:700,color:'#fff',fontSize:13}}>{b.label}</div>
+                    {submitted&&<div style={{marginLeft:'auto',fontSize:12,fontWeight:700,color:correct?'#34d399':'#f87171'}}>{correct?'✅ Верно':'❌ Неверно'}</div>}
+                  </div>
+                  <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'1fr 1fr',gap:10}}>
+                    {b.opts.map(o=>{
+                      const isSel=sel===o.id;
+                      const isCorrectOpt=submitted&&o.id===b.correctId;
+                      const isWrongOpt=submitted&&isSel&&o.id!==b.correctId;
+                      return(
+                        <div key={o.id} onClick={()=>choose(b.id,o.id)}
+                          style={{padding:'10px 14px',borderRadius:10,cursor:submitted?'default':'pointer',transition:'all .15s',fontSize:12,lineHeight:1.6,
+                            background:isCorrectOpt?'rgba(52,211,153,.1)':isWrongOpt?'rgba(248,113,113,.08)':isSel?'rgba(124,58,237,.15)':'rgba(255,255,255,.03)',
+                            border:`1px solid ${isCorrectOpt?'rgba(52,211,153,.5)':isWrongOpt?'rgba(248,113,113,.4)':isSel?'rgba(124,58,237,.5)':'rgba(255,255,255,.08)'}`,
+                            color:isCorrectOpt?'#34d399':isWrongOpt?'#f87171':isSel?'#a78bfa':'#94a3b8'}}>
+                          <div style={{fontWeight:600,marginBottom:4,fontSize:11}}>{isCorrectOpt?'✅ ':isWrongOpt?'❌ ':isSel?'◉ ':'○ '}Вариант {o.id.toUpperCase()}</div>
+                          {o.text}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {submitted&&<div style={{marginTop:10,fontSize:11,color:'#64748b',fontStyle:'italic',borderTop:'1px solid rgba(255,255,255,.06)',paddingTop:8}}>{b.explanation}</div>}
+                </div>
+              );
+            })}
+          </div>
+          {submitted&&(
+            <div className="card slide-up" style={{padding:16,margin:'20px 0',borderColor:'rgba(167,139,250,.4)',background:'rgba(124,58,237,.08)',textAlign:'center'}}>
+              <div style={{fontSize:28,marginBottom:8}}>💼</div>
+              <div style={{fontWeight:700,color:'#a78bfa',fontSize:15,marginBottom:4}}>КП отправлено клиенту!</div>
+              <div style={{fontSize:12,color:'#64748b'}}>{d.lesson}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── AI QUIZ SCREEN (Урок 9: ИИ в SMM) ───────────────────────────
+const AIQuizScreen=({task,onComplete,onBack})=>{
+  const mob=useIsMobile();
+  const d=task.data;
+  const [answers,setAnswers]=useState({});
+  const [submitted,setSubmitted]=useState(false);
+  const notify=useNotif();
+
+  const answer=(qid,optId)=>{if(!submitted)setAnswers(a=>({...a,[qid]:optId}));};
+  const allDone=d.questions.every(q=>answers[q.id]);
+
+  const submit=()=>{
+    let correct=0;
+    d.questions.forEach(q=>{if(answers[q.id]===q.correctId)correct++;});
+    const pct=Math.round(correct/d.questions.length*100);
+    setSubmitted(true);
+    notify(`${correct}/${d.questions.length} правильных! ИИ-инструменты освоены · +${task.reward.xp} XP`,'success','🤖');
+    setTimeout(()=>onComplete(task,pct/100),1500);
+  };
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      <div style={{padding:'12px 20px',borderBottom:'1px solid rgba(255,255,255,.07)',display:'flex',gap:12,alignItems:'center'}}>
+        <span style={{fontSize:28}}>{task.icon}</span>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:700,color:'#fff',fontSize:15}}>{task.title}</div>
+          <div style={{fontSize:12,color:'#64748b'}}>{task.desc}</div>
+        </div>
+        <button className="btn btn-primary" onClick={submit} disabled={submitted||!allDone}>
+          🤖 Проверить
+        </button>
+      </div>
+      <div className="scroll-y" style={{flex:1,padding:mob?12:20}}>
+        <div style={{maxWidth:700,margin:'0 auto',display:'flex',flexDirection:'column',gap:14}}>
+          <div style={{fontSize:12,color:'#64748b',background:'rgba(217,119,6,.07)',border:'1px solid rgba(217,119,6,.2)',borderRadius:10,padding:'10px 14px'}}>
+            🤖 <strong style={{color:'#d97706'}}>ИИ-инструменты в SMM:</strong> выбери правильный инструмент для каждой задачи.
+          </div>
+          {d.questions.map((q,qi)=>{
+            const sel=answers[q.id];
+            const isCorrect=submitted&&sel===q.correctId;
+            return(
+              <div key={q.id} className="card" style={{padding:14,borderColor:submitted?(isCorrect?'rgba(52,211,153,.4)':'rgba(248,113,113,.35)'):'rgba(255,255,255,.08)'}}>
+                <div style={{fontSize:12,fontWeight:700,color:'#fff',marginBottom:4}}>{qi+1}. {q.scenario}</div>
+                <div style={{fontSize:11,color:'#64748b',marginBottom:12,fontStyle:'italic'}}>{q.task}</div>
+                <div style={{display:'grid',gridTemplateColumns:mob?'1fr 1fr':'repeat(4,1fr)',gap:8}}>
+                  {q.opts.map(o=>{
+                    const isSel=sel===o.id;
+                    const isCorr=submitted&&o.id===q.correctId;
+                    const isWrong=submitted&&isSel&&!isCorr;
+                    return(
+                      <div key={o.id} onClick={()=>answer(q.id,o.id)}
+                        style={{padding:'10px',borderRadius:10,cursor:submitted?'default':'pointer',textAlign:'center',transition:'all .15s',
+                          background:isCorr?'rgba(52,211,153,.12)':isWrong?'rgba(248,113,113,.08)':isSel?'rgba(217,119,6,.18)':'rgba(255,255,255,.03)',
+                          border:`1px solid ${isCorr?'rgba(52,211,153,.5)':isWrong?'rgba(248,113,113,.4)':isSel?'rgba(217,119,6,.5)':'rgba(255,255,255,.08)'}`,
+                          color:isCorr?'#34d399':isWrong?'#f87171':isSel?'#fbbf24':'#94a3b8'}}>
+                        <div style={{fontSize:22,marginBottom:4}}>{o.emoji}</div>
+                        <div style={{fontSize:11,fontWeight:700}}>{o.label}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {submitted&&<div style={{marginTop:10,fontSize:11,color:'#64748b',fontStyle:'italic',borderTop:'1px solid rgba(255,255,255,.06)',paddingTop:8}}>{q.explanation}</div>}
+              </div>
+            );
+          })}
+          {submitted&&(
+            <div className="card slide-up" style={{padding:16,borderColor:'rgba(217,119,6,.4)',background:'rgba(217,119,6,.08)',textAlign:'center'}}>
+              <div style={{fontSize:28,marginBottom:8}}>🤖</div>
+              <div style={{fontWeight:700,color:'#d97706',fontSize:15,marginBottom:4}}>ИИ-стек собран!</div>
+              <div style={{fontSize:12,color:'#64748b'}}>{d.lesson}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── TASK LAUNCHER ───────────────────────────────────────────────
 const TaskLauncher=({task,gs,onComplete,onBack,onFlag})=>{
   if(task.type==='chat')return<ChatScreen tasks={[task]} onComplete={onComplete} onBack={onBack} onFlag={onFlag}/>;
@@ -1996,17 +2524,16 @@ const TaskLauncher=({task,gs,onComplete,onBack,onFlag})=>{
   if(task.type==='analytics')return<AnalyticsScreen task={task} onComplete={onComplete} onBack={onBack}/>;
   if(task.type==='ai_content')return<AIStudioScreen task={task} onComplete={onComplete} onBack={onBack}/>;
   if(task.type==='calendar')return<CalendarScreen task={task} onComplete={onComplete} onBack={onBack}/>;
+  if(task.type==='research')return<ResearchScreen task={task} onComplete={onComplete} onBack={onBack}/>;
+  if(task.type==='kp')return<KPBuilderScreen task={task} onComplete={onComplete} onBack={onBack}/>;
+  if(task.type==='ai_quiz')return<AIQuizScreen task={task} onComplete={onComplete} onBack={onBack}/>;
   return<div style={{padding:40,color:'#64748b'}}>Неизвестный тип задачи</div>;
 };
 
 // ─── ZONE SCREEN (pick task) ─────────────────────────────────────
 const ZoneScreen=({zoneId,tasks,onStartTask,onBack})=>{
   const zone=ZONES.find(z=>z.id===zoneId);
-  const zoneTasks=tasks.filter(t=>{
-    if(zoneId==='video_edit')return t.type==='video_edit';
-    if(zoneId==='ai_content')return t.type==='ai_content';
-    return t.type===zoneId;
-  });
+  const zoneTasks=tasks.filter(t=>t.type===zoneId);
   return(
     <div style={{flex:1,padding:24,overflow:'auto'}} className="scroll-y">
       <button onClick={onBack} className="btn btn-secondary" style={{marginBottom:20,padding:'7px 14px',fontSize:13}}>← Назад</button>
