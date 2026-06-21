@@ -657,7 +657,7 @@ const NotifProvider=({children})=>{
 const useNotif=()=>React.useContext(NotifCtx);
 
 // ─── HUD ─────────────────────────────────────────────────────────
-const Hud=({gs,screen,onNav})=>{
+const Hud=({gs,screen,onNav,onShowSave})=>{
   const lvl=LEVELS[Math.min(gs.level-1,LEVELS.length-1)];
   const nextLvl=LEVELS[Math.min(gs.level,LEVELS.length-1)];
   const xpCur=gs.xp-(LEVELS[gs.level-2]?.next||0);
@@ -704,6 +704,9 @@ const Hud=({gs,screen,onNav})=>{
             {s==='office'?'🏠 Офис':s==='tasks'?'📋 Задачи':'🛒 Магазин'}
           </button>
         ))}
+        <button onClick={onShowSave} className="btn btn-secondary" style={{padding:'5px 12px',fontSize:12}} title="Сохранить / загрузить прогресс">
+          {mob?'💾':'💾 Сохранить'}
+        </button>
       </div>
     </div>
   );
@@ -2475,7 +2478,10 @@ const CONSEQUENCES={
 
 // ─── MAIN APP ────────────────────────────────────────────────────
 const App=()=>{
-  const [started,setStarted]=useState(false);
+  const [started,setStarted]=useState(()=>!!localStorage.getItem(SAVE_KEY));
+  const [showSaveModal,setShowSaveModal]=useState(false);
+  const [loadCode,setLoadCode]=useState('');
+  const [loadError,setLoadError]=useState('');
   const [gs,setGs]=useState(loadState);
   const [screen,setScreen]=useState('office');
   const [zoneId,setZoneId]=useState(null);
@@ -2539,8 +2545,52 @@ const App=()=>{
     );
   }
 
+  const getSaveCode=()=>btoa(unescape(encodeURIComponent(JSON.stringify(gs))));
+  const applyLoadCode=(code)=>{
+    try{
+      const parsed=JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+      if(!parsed.playerName)throw new Error('invalid');
+      setGs({...defaultState(),...parsed});
+      setCompletedIds(new Set(parsed.completedTasks||[]));
+      localStorage.setItem(SAVE_KEY,JSON.stringify(parsed));
+      setStarted(true);
+      setLoadCode('');setLoadError('');setShowSaveModal(false);
+    }catch(e){setLoadError('Неверный код. Проверь и попробуй снова.');}
+  };
+
   return(
     <NotifProvider>
+      {showSaveModal&&(
+        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,.7)',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}>
+          <div className="card pop-in" style={{width:'min(480px,95vw)',padding:28,display:'flex',flexDirection:'column',gap:18}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <div style={{fontSize:18,fontWeight:800,color:'#fff'}}>💾 Сохранение / Загрузка</div>
+              <button className="btn btn-secondary" style={{padding:'4px 10px'}} onClick={()=>{setShowSaveModal(false);setLoadError('');setLoadCode('');}}>✕</button>
+            </div>
+            <div>
+              <div style={{fontSize:12,color:'#64748b',marginBottom:8}}>Твой код сохранения — скопируй и сохрани:</div>
+              <div style={{background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.1)',borderRadius:10,padding:12,fontSize:11,color:'#a78bfa',wordBreak:'break-all',fontFamily:'monospace',maxHeight:100,overflow:'auto'}}>
+                {getSaveCode()}
+              </div>
+              <button className="btn btn-primary" style={{marginTop:8,width:'100%'}} onClick={()=>{navigator.clipboard?.writeText(getSaveCode()).then(()=>alert('Скопировано!')).catch(()=>{});}}>
+                📋 Скопировать код
+              </button>
+            </div>
+            <div style={{borderTop:'1px solid rgba(255,255,255,.07)',paddingTop:16}}>
+              <div style={{fontSize:12,color:'#64748b',marginBottom:8}}>Загрузить прогресс — вставь код сюда:</div>
+              <textarea className="game-textarea" style={{minHeight:80,fontSize:11,fontFamily:'monospace'}}
+                placeholder="Вставь код сохранения..." value={loadCode}
+                onChange={e=>{setLoadCode(e.target.value);setLoadError('');}}/>
+              {loadError&&<div style={{color:'#f87171',fontSize:12,marginTop:4}}>{loadError}</div>}
+              <button className="btn btn-primary" style={{marginTop:8,width:'100%'}} disabled={!loadCode.trim()}
+                onClick={()=>applyLoadCode(loadCode)}>
+                🔄 Загрузить прогресс
+              </button>
+            </div>
+            <div style={{fontSize:11,color:'#374151',textAlign:'center'}}>На том же устройстве прогресс сохраняется автоматически</div>
+          </div>
+        </div>
+      )}
       <GameUI
         gs={gs} screen={screen} zoneId={zoneId}
         activeTask={activeTask} availTasks={availTasks} completedTasks={completedTasks}
@@ -2548,6 +2598,7 @@ const App=()=>{
         nav={nav} openZone={openZone} startTask={startTask}
         completeTask={completeTask} handleFlag={handleFlag}
         dismissConsequence={dismissConsequence} setGs={setGs}
+        onShowSave={()=>setShowSaveModal(true)}
       />
     </NotifProvider>
   );
@@ -2555,11 +2606,11 @@ const App=()=>{
 
 // ─── GAME UI (inside NotifProvider so useNotif works) ─────────────
 const GameUI=({gs,screen,zoneId,activeTask,availTasks,completedTasks,consequences,
-  nav,openZone,startTask,completeTask,handleFlag,dismissConsequence,setGs})=>{
+  nav,openZone,startTask,completeTask,handleFlag,dismissConsequence,setGs,onShowSave})=>{
   const notify=useNotif();
   return(
     <>
-      <Hud gs={gs} screen={screen} onNav={nav}/>
+      <Hud gs={gs} screen={screen} onNav={nav} onShowSave={onShowSave}/>
       {/* Consequence popups */}
       {consequences.map(c=>(
         <div key={c.id} className="slide-up" style={{
