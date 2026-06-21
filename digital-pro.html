@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#07070f">
+<title>Digital Studio Pro</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#07070f;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;height:100vh;overflow:hidden}
+#root{height:100vh;display:flex;flex-direction:column}
+
+/* ── MOBILE RESPONSIVE ───────────────────────────── */
+@media(max-width:768px){
+  body{overflow:auto;height:auto}
+  #root{height:auto;min-height:100svh}
+  .hud{flex-wrap:wrap;gap:6px;padding:8px 10px}
+  .hud-stat{padding:3px 7px;font-size:11px}
+  .hud-hide-mobile{display:none !important}
+  .hud-nav{order:10;width:100%;display:flex;gap:5px;justify-content:center;border-top:1px solid rgba(255,255,255,.06);padding-top:6px;margin-top:2px}
+  .office-grid{grid-template-columns:repeat(2,1fr) !important;gap:10px !important}
+  .office-zone{padding:14px;border-radius:14px}
+  .zone-desc-text{display:none !important}
+  .exam-banner-span{grid-column:span 2 !important}
+  .chat-sidebar{width:100% !important;border-right:none !important;border-bottom:1px solid rgba(255,255,255,.07) !important;flex-direction:row !important;overflow-x:auto !important;flex-shrink:0 !important;max-height:72px !important;min-height:72px !important}
+  .chat-outer{flex-direction:column !important}
+  .chat-msg{max-width:92% !important;font-size:13px !important}
+  .write-layout{flex-direction:column !important}
+  .write-rubric{width:100% !important;border-left:none !important;border-top:1px solid rgba(255,255,255,.07) !important;max-height:none !important}
+  .video-outer{flex-direction:column !important}
+  .video-shelf{width:100% !important;border-right:none !important;border-bottom:1px solid rgba(255,255,255,.07) !important;max-height:160px !important;flex-direction:row !important;flex-wrap:wrap !important;overflow-x:auto !important}
+  .task-two-col{grid-template-columns:1fr !important}
+  .game-textarea,.game-input{font-size:16px !important}
+  .btn{font-size:12px;padding:7px 12px}
+  .cert-inner{padding:22px 16px !important}
+  .cert-skills-grid{grid-template-columns:1fr !important}
+  .cert-grade-row{flex-direction:column !important;align-items:flex-start !important}
+}
+@media(max-width:420px){
+  .office-grid{grid-template-columns:1fr !important}
+  .exam-banner-span{grid-column:span 1 !important}
+}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(124,58,237,.5);border-radius:2px}
+
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{transform:scale(.85);opacity:0}70%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 12px #7c3aed30}50%{box-shadow:0 0 28px #7c3aed70}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:0}50%{opacity:1}}
+@keyframes slideRight{from{transform:translateX(110%)}to{transform:translateX(0)}}
+@keyframes confetti{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(80px) rotate(720deg);opacity:0}}
+@keyframes xpPop{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-40px);opacity:0}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes chartBars{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+
+.slide-up{animation:slideUp .35s ease both}
+.fade-in{animation:fadeIn .3s ease both}
+.pop-in{animation:pop .4s ease both}
+.float-anim{animation:float 3s ease-in-out infinite}
+.glow-anim{animation:glow 2s ease-in-out infinite}
+.pulse-anim{animation:pulse 1.2s ease-in-out infinite}
+.spin-anim{animation:spin .9s linear infinite}
+
+.glass{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
+.glass-dark{background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.06)}
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px}
+
+.btn{padding:9px 18px;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;box-shadow:0 4px 16px rgba(124,58,237,.35)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(124,58,237,.5)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-secondary{background:rgba(255,255,255,.07);color:#cbd5e1;border:1px solid rgba(255,255,255,.11)}
+.btn-secondary:hover{background:rgba(255,255,255,.12);color:#fff}
+.btn-danger{background:rgba(220,38,38,.18);color:#fca5a5;border:1px solid rgba(220,38,38,.3)}
+.btn-danger:hover{background:rgba(220,38,38,.28)}
+.btn-success{background:rgba(16,185,129,.18);color:#6ee7b7;border:1px solid rgba(16,185,129,.3)}
+.btn-success:hover{background:rgba(16,185,129,.28)}
+
+.hud{background:rgba(7,7,15,.96);border-bottom:1px solid rgba(124,58,237,.18);padding:8px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:50}
+.hud-stat{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);font-size:12px;font-weight:600}
+
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:10px;cursor:pointer;transition:all .2s;color:#4b5563;font-size:13px;font-weight:500;border:1px solid transparent;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#94a3b8}
+.nav-item.active{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.3);color:#a78bfa}
+.nav-badge{margin-left:auto;background:#7c3aed;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700}
+
+.office-zone{border-radius:18px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);cursor:pointer;transition:all .25s;position:relative;overflow:hidden;padding:20px}
+.office-zone:hover{border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.07);transform:translateY(-3px);box-shadow:0 10px 32px rgba(124,58,237,.15)}
+.office-zone.has-task{border-color:rgba(251,191,36,.35);box-shadow:0 0 18px rgba(251,191,36,.08)}
+.task-dot{position:absolute;top:12px;right:12px;width:9px;height:9px;background:#fbbf24;border-radius:50%;animation:pulse 1s infinite}
+
+.chat-msg{max-width:75%;padding:10px 14px;border-radius:16px;font-size:13.5px;line-height:1.55;animation:slideUp .3s ease both}
+.chat-from-client{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;color:#e2e8f0}
+.chat-from-me{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-bottom-right-radius:4px;margin-left:auto}
+.chat-option{border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:11px 15px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.03);font-size:13px;text-align:left;color:#cbd5e1;width:100%}
+.chat-option:hover{border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.1);color:#fff}
+.chat-option.sel{border-color:#7c3aed;background:rgba(124,58,237,.15);color:#fff}
+
+.clip-card{border-radius:10px;cursor:grab;transition:all .2s;user-select:none;position:relative;padding:10px;border:2px solid transparent}
+.clip-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.clip-card.dragging-src{opacity:.35;cursor:grabbing}
+.clip-card.banned{border-color:rgba(220,38,38,.5) !important}
+.timeline-drop{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.12);border-radius:10px;min-height:70px;transition:all .2s;position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:6px}
+.timeline-drop.over{border-color:#7c3aed;background:rgba(124,58,237,.08)}
+.tl-clip{border-radius:8px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .15s;height:54px;flex-direction:column;justify-content:center;text-align:center}
+.tl-clip:hover{filter:brightness(1.2)}
+.tl-clip.sel-clip{outline:2px solid #fff;outline-offset:1px}
+
+.monitor{background:#000;border-radius:12px;border:3px solid #1e293b;aspect-ratio:16/9;overflow:hidden;position:relative;box-shadow:0 0 0 1px #334155,0 20px 50px rgba(0,0,0,.5)}
+
+.metric-card{border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);cursor:pointer;transition:all .2s}
+.metric-card:hover{border-color:rgba(124,58,237,.3)}
+.metric-card.sel-metric{border-color:#7c3aed;background:rgba(124,58,237,.1)}
+.metric-card.problem{border-color:rgba(220,38,38,.25);background:rgba(220,38,38,.04)}
+.metric-card.problem.sel-metric{border-color:#ef4444;background:rgba(239,68,68,.12);box-shadow:0 0 18px rgba(239,68,68,.2)}
+.metric-card.good{border-color:rgba(16,185,129,.2)}
+
+.ai-dot{width:7px;height:7px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s infinite}
+.ai-dot:nth-child(2){animation-delay:.2s}
+.ai-dot:nth-child(3){animation-delay:.4s}
+.ai-output{border:1px solid rgba(124,58,237,.2);background:rgba(124,58,237,.04);border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;animation:slideUp .35s ease both}
+.ai-output:hover{border-color:rgba(124,58,237,.45);background:rgba(124,58,237,.09)}
+.ai-output.sel-output{border-color:#7c3aed;background:rgba(124,58,237,.14);box-shadow:0 0 18px rgba(124,58,237,.18)}
+
+.game-input{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:9px 13px;font-size:13px;transition:border-color .2s;outline:none;width:100%;font-family:inherit}
+.game-input:focus{border-color:rgba(124,58,237,.5)}
+.game-textarea{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:11px 13px;font-size:13px;transition:border-color .2s;outline:none;width:100%;resize:none;font-family:inherit}
+.game-textarea:focus{border-color:rgba(124,58,237,.5)}
+
+.notif{position:fixed;bottom:20px;right:20px;z-index:9999;min-width:270px;max-width:340px;background:rgba(12,12,24,.97);border:1px solid rgba(124,58,237,.28);border-radius:14px;padding:13px 16px;animation:slideRight .4s ease;backdrop-filter:blur(16px);box-shadow:0 10px 40px rgba(0,0,0,.5)}
+
+.xp-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden}
+.xp-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width .7s ease}
+
+.cal-day{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:10px;min-height:90px;padding:7px;transition:all .2s}
+.cal-day.over{border-color:#7c3aed;background:rgba(124,58,237,.08)}
+.cal-post{border-radius:7px;padding:5px 8px;font-size:11px;margin-top:4px;cursor:grab;user-select:none;transition:all .15s;border:1px solid transparent}
+.cal-post:hover{transform:scale(1.03)}
+
+.prompt-opt{border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.03);text-align:left;color:#94a3b8;font-size:13px;width:100%}
+.prompt-opt:hover{border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.08);color:#c4b5fd}
+.prompt-opt.sel-prompt{border-color:#7c3aed;background:rgba(124,58,237,.14);color:#a78bfa}
+
+.scroll-y{overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(124,58,237,.3) transparent}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+/* @jsxRuntime classic */
+const {useState,useEffect,useRef,useCallback} = React;
+
+// ─── MOBILE HOOK ──────────────────────────────────────────────────
+const useIsMobile=()=>{
+  const [mob,setMob]=useState(()=>window.innerWidth<=768);
+  useEffect(()=>{
+    const fn=()=>setMob(window.innerWidth<=768);
+    window.addEventListener('resize',fn);
+    return()=>window.removeEventListener('resize',fn);
+  },[]);
+  return mob;
+};
+
+const SAVE_KEY='digital-pro-v1';
+
+// ─── GAME DATA ───────────────────────────────────────────────────────
+const LEVELS=[
+  {lvl:1,title:'Фрилансер',color:'#6b7280',next:400},
+  {lvl:2,title:'Junior Digital',color:'#7c3aed',next:1000},
+  {lvl:3,title:'Middle Specialist',color:'#2563eb',next:2200},
+  {lvl:4,title:'Senior Digital',color:'#059669',next:4000},
+  {lvl:5,title:'Head of Digital',color:'#d97706',next:6500},
+  {lvl:6,title:'Владелец агентства',color:'#dc2626',next:99999},
+];
+
+const CLIENTS=[
+  {
+    id:'marina',name:'Марина',company:'Кофейня «Арома»',emoji:'👩‍🦰',
+    color:'#92400e',accent:'#fbbf24',niche:'HoReCa',
+  },
+  {
+    id:'dmitry',name:'Дмитрий',company:'Фитнес-клуб «Энергия»',emoji:'💪',
+    color:'#065f46',accent:'#34d399',niche:'Fitness',
+  },
+  {
+    id:'alina',name:'Алина',company:'Glow Beauty',emoji:'💄',
+    color:'#701a75',accent:'#f0abfc',niche:'Beauty',
+  },
+];
+
+const ALL_TASKS=[
+  // ══ WEEK 1 — Созвон и стратегия (Кофейня Арома) ══════════════
+  {
+    id:'t-chat-1',type:'chat',clientId:'marina',
+    week:1,title:'Созвон со стратегией',
+    desc:'Марина хочет понять план на первый месяц. Отвечаешь сам — никаких подсказок!',
+    icon:'💬',reward:{money:3500,xp:45,rep:12},deadline:3,
+    consequenceFlag:'marina_strategy_chat', // outcome stored as flag for later
+    data:{
+      scenes:[
+        {
+          from:'Марина',
+          msg:'Привет! В плане написано "Reels 3 раза в неделю". Это реально даст результат? Мне кажется, нужно больше постов...',
+          hint:'Объясни, почему качество важнее количества. Упомяни алгоритм Instagram, ER, охват.',
+          evalKeys:{
+            confidence:[['уверен','точно','гарантир','именно так'],['качествен','результат даст','покажем']],
+            expertise:[['reels','рилс','алгоритм'],['er','вовлечённость','охват','engagement'],['instagram продвигает','видео предпочитает','10к','10 000']],
+            sales:[['предлагаю','решение','вот план'],['результат','эффект','докажем','покажем']],
+            objections:[['не нужно больше','качество важнее','дело не в количестве'],['алгоритм','данные','исследован','статистик','доказыва']],
+          }
+        },
+        {
+          from:'Марина',
+          msg:'Убедили! А когда увидим первые результаты?',
+          hint:'Называй честные сроки: 2-3 недели охват, 4-я неделя подписчики. Предложи промежуточный отчёт.',
+          evalKeys:{
+            confidence:[['точно','гарантир','рассчитывайте'],['дам отчёт','обеспечу','предоставлю']],
+            expertise:[['охват','reach','алгоритм'],['2-3 недели','3 недели','органичес']],
+            sales:[['промежуточный отчёт','отчитаюсь','покажу метрики'],['первый результат','этап']],
+            objections:[['реально','честно','не обещаю чудес'],['при этом','зависит также']],
+          }
+        },
+        {
+          from:'Марина',
+          msg:'Отлично! И последнее — фото нужны срочно или подождёте пока бариста сделает?',
+          hint:'Возьми инициативу: предложи конкретный день съёмки, скажи что это даст контент на месяц.',
+          evalKeys:{
+            confidence:[['организую','предлагаю провести'],['берём','сам займусь','решим быстро']],
+            expertise:[['съёмк','фотосессию','контент на месяц'],['2 часа','профессиональн','план съёмки']],
+            sales:[['четверг','конкретн','эт','неделе'],['запас материала','закроем','на месяц']],
+            objections:[['не стоит ждать','лучше не откладывать','бариста не всегда']],
+          }
+        }
+      ]
+    }
+  },
+
+  // ══ WEEK 1 — Стратегия (текстовое задание) ═══════════════════
+  {
+    id:'t-write-strategy',type:'write',clientId:'marina',
+    week:1,title:'Написать SMM-стратегию',
+    desc:'Марина просит документ со стратегией. Пишешь сам — AI оценит качество.',
+    icon:'📝',reward:{money:5000,xp:65,rep:18},deadline:4,
+    consequenceFlag:'marina_strategy_quality',
+    data:{
+      brief:'Кофейня «Арома», Симферополь. Нишевое заведение, средний чек 350₽. ЦА: 20-35 лет, офисные и студенты. Цель: +500 подписчиков за месяц, узнаваемость в городе.',
+      task:'Напиши SMM-стратегию для кофейни на первый месяц. Включи: цели, целевую аудиторию, контент-микс, тональность, KPI.',
+      minLength:150,
+      rubric:[
+        {id:'r1',label:'Цели (SMART)',pts:20,keywords:['цель','kpi','kpi','охват','подписчик','результат','задача'],
+         tip:'Укажи конкретные, измеримые цели: +500 подписчиков, охват 15К, ER выше 3%'},
+        {id:'r2',label:'Целевая аудитория',pts:20,keywords:['аудитория','цел','студент','офис','20-35','возраст','портрет','боль','интерес'],
+         tip:'Опиши ЦА детально: возраст, интересы, боли, когда сидят в Instagram'},
+        {id:'r3',label:'Контент-микс',pts:20,keywords:['reels','рилс','stories','карусель','пост','контент','микс','формат','видео'],
+         tip:'Что публикуем: Reels, Stories, карусели, фото. В каком соотношении?'},
+        {id:'r4',label:'Тональность (TOV)',pts:20,keywords:['тон','tov','голос','стиль','обращение','тональность','дружелюб','уют','тёпл'],
+         tip:'Как говорим с аудиторией? Дружелюбно, уютно, со знанием дела'},
+        {id:'r5',label:'KPI и метрики',pts:20,keywords:['kpi','метрик','охват','er','вовлечённость','клики','подписчик','динамика','контроль'],
+         tip:'Как будем измерять результат? Охват, ER, новые подписчики, клики'},
+      ],
+      exampleAnswer:'Стратегия SMM для кофейни «Арома» на апрель.\n\nЦЕЛИ: +500 подписчиков, охват 15 000 чел, ER > 3%, 50 кликов по ссылке в Bio.\n\nЦЕЛЕВАЯ АУДИТОРИЯ: 20-35 лет, студенты и офисные работники Симферополя. Боли: хочется уюта и хорошего кофе в ритме города. В Instagram заходят в обеденный перерыв и вечером.\n\nКОНТЕНТ-МИКС: 40% Reels (атмосфера, процесс), 30% Stories (вовлечение, опросы), 20% карусели (полезные факты о кофе), 10% анонсы.\n\nТОНАЛЬНОСТЬ: Тёплая, дружелюбная, как разговор за чашкой кофе. Обращение на «ты». Без официоза.\n\nKPI: Еженедельный мониторинг охвата и ER. Отчёт на 2-й и 4-й неделе.',
+    }
+  },
+
+  // ══ WEEK 2 — Переговоры по бюджету (Дмитрий) ═════════════════
+  {
+    id:'t-chat-2',type:'chat',clientId:'dmitry',
+    week:2,title:'Переговоры с фитнес-клубом',
+    desc:'Дмитрий спрашивает про TikTok и бюджет. Пиши ответы сам.',
+    icon:'💬',reward:{money:4000,xp:50,rep:15},deadline:2,
+    consequenceFlag:'dmitry_budget_chat',
+    data:{
+      scenes:[
+        {
+          from:'Дмитрий',
+          msg:'Нам нужен TikTok. Говорят, там сейчас всё. Как быстро вы нас туда запустите?',
+          hint:'Дай конкретный план запуска: сроки, шаги, первые результаты.',
+          evalKeys:{
+            confidence:[['уверен','точно','запустим','отличн'],['гарантир','обеспечим','реализуем']],
+            expertise:[['tiktok','тикток','анализ цел','референс'],['тестов','ролик','контент','аудитория']],
+            sales:[['неделю','план запуска','этапы','шаги'],['первые','1000','результат','цель']],
+            objections:[['популярн','хорош выбор','фитнес подходит'],['реально','аргумент','данн']],
+          }
+        },
+        {
+          from:'Дмитрий',
+          msg:'А сколько это стоит? У нас бюджет 30 000 в месяц.',
+          hint:'Раздели бюджет прозрачно: производство, таргет, работа. Упомяни ROI.',
+          evalKeys:{
+            confidence:[['хорош','отличн','достаточно','реально'],['справимся','сделаем','обеспечим']],
+            expertise:[['производство','таргет','roi','возврат'],['15к','10к','5к','бюджет']],
+            sales:[['разобьём','план','распределю'],['roi','окупаемость','возврат','результат']],
+            objections:[['достаточно','хватит','30К можно'],['главное','эффективно','грамотно']],
+          }
+        }
+      ]
+    }
+  },
+
+  // ══ WEEK 2 — Контент-план (текстовое задание) ════════════════
+  {
+    id:'t-write-content-plan',type:'write',clientId:'marina',
+    week:2,title:'Написать контент-план на неделю',
+    desc:'Марина ждёт контент-план на 7 дней. Составь его сам — с темами, форматами и временем.',
+    icon:'📋',reward:{money:4500,xp:60,rep:16},deadline:3,
+    consequenceFlag:'marina_content_plan_quality',
+    data:{
+      brief:'Кофейня «Арома». Нужен контент-план на 7 дней. Форматы: Reels, Stories, карусели. Тон: уютный, дружелюбный. Акцент на атмосферу и бариста.',
+      task:'Напиши контент-план на 7 дней для кофейни. Для каждого дня укажи: тему, формат (Reels/Stories/карусель/пост), хук или первую фразу.',
+      minLength:200,
+      rubric:[
+        {id:'r1',label:'7 дней',pts:20,keywords:['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье','пн','вт','ср','чт','пт','сб','вс','день 1','день 2'],
+         tip:'Каждому дню — хотя бы одна запись'},
+        {id:'r2',label:'Форматы контента',pts:20,keywords:['reels','рилс','stories','сторис','карусель','пост','фото','видео'],
+         tip:'Указывай конкретный формат для каждой публикации'},
+        {id:'r3',label:'Темы и идеи',pts:20,keywords:['бариста','кофе','атмосфер','гост','ингредиент','рецепт','процесс','интерьер','до'],
+         tip:'Темы должны отражать жизнь кофейни, а не быть абстрактными'},
+        {id:'r4',label:'Хуки / первые фразы',pts:20,keywords:['хук','первая фраза','начин','открываем','откройте','угадай','знаешь ли','а вы знали','представь'],
+         tip:'Цепляющий хук — первые 2 секунды решают всё'},
+        {id:'r5',label:'CTA и вовлечение',pts:20,keywords:['cta','призыв','сохрани','поделись','отметь','напиши','голосуй','расскажи','отвечай'],
+         tip:'Каждый пост должен заканчиваться призывом к действию'},
+      ],
+      exampleAnswer:'КОНТЕНТ-ПЛАН «АРОМА» — НЕДЕЛЯ\n\nПн — Reels: «Утро начинается здесь» — хук: «Пока город просыпается, наш бариста уже варит первый эспрессо» / CTA: сохрани если тоже утренний человек\n\nВт — Stories: опрос «Какой кофе твой?» капучино vs флэт уайт / CTA: голосуй!\n\nСр — Карусель: «5 фактов о нашем зерне» / хук: «А вы знали, откуда приехал ваш кофе?» / CTA: сохрани\n\nЧт — Reels BTS: день бариста — хук: «Видели когда-нибудь как рождается идеальная розетта?» / CTA: отметь друга кофемана\n\nПт — Пост: TGIF-настроение + акция в пятницу / хук: «Пятница — повод порадовать себя» / CTA: приходи сегодня до 18:00\n\nСб — Reels: атмосфера зала в уикенд / хук: «Суббота в Ароме выглядит вот так...» / CTA: ждём тебя\n\nВс — Stories-голосование «Планируешь на неделю?» + анонс недели / CTA: напиши в комментарии что хочешь увидеть',
+    }
+  },
+
+  // ══ WEEK 3 — Написать Reels-идеи ══════════════════════════════
+  {
+    id:'t-write-reels',type:'write',clientId:'alina',
+    week:3,title:'Придумать 3 Reels-идеи для Glow Beauty',
+    desc:'Алина просит Reels-идеи для бьюти-аккаунта. Включай хук, структуру, CTA.',
+    icon:'🎬',reward:{money:4000,xp:55,rep:15},deadline:3,
+    consequenceFlag:'alina_reels_quality',
+    data:{
+      brief:'Glow Beauty — студия красоты. ЦА: девушки 18-30. Нужны 3 идеи для Reels в Instagram. Тон: вдохновляющий, стильный. Акцент на трансформацию и экспертизу.',
+      task:'Опиши 3 идеи для Reels. Для каждой: название, хук (первая фраза), структура (что показываем), CTA в конце.',
+      minLength:200,
+      rubric:[
+        {id:'r1',label:'3 идеи',pts:20,keywords:['идея 1','идея 2','идея 3','reels 1','reels 2','reels 3','первый','второй','третий','1.','2.','3.'],
+         tip:'Нужны именно три отдельные идеи'},
+        {id:'r2',label:'Хуки',pts:25,keywords:['хук','первая фраза','открываем','а вы знали','никогда не','думала что','секрет','ошибка','правда о'],
+         tip:'Каждое видео начинается с хука — фразы, которая останавливает скролл'},
+        {id:'r3',label:'Структура',pts:25,keywords:['структур','показываем','сначала','затем','потом','шаг','процесс','до','после','трансформ'],
+         tip:'Опиши что происходит в видео: до → процесс → после → вывод'},
+        {id:'r4',label:'CTA',pts:15,keywords:['cta','призыв','сохрани','поделись','отметь','запишись','ссылка','bio'],
+         tip:'Каждое Reels заканчивается призывом к действию'},
+        {id:'r5',label:'Попадание в ЦА',pts:15,keywords:['девушк','красот','уход','стиль','трансформ','макияж','кожа','образ','до/после'],
+         tip:'Идеи должны попадать в боли и желания целевой аудитории'},
+      ],
+      exampleAnswer:'REELS-ИДЕИ ДЛЯ GLOW BEAUTY\n\nИдея 1: «До/после за 60 секунд»\nХук: «Ты не поверишь что было 60 минут назад» (показываем уставшее лицо без макияжа)\nСтруктура: до → процесс (мастер работает, музыка, крупные планы рук) → после (сияющий образ + реакция клиентки)\nCTA: «Запишись — ссылка в Bio, мест осталось мало»\n\nИдея 2: «Секрет идеальных бровей»\nХук: «Вы делаете эту ошибку с бровями каждый день»\nСтруктура: показываем типичную ошибку → мастер объясняет почему → правильная техника в 3 шага → результат\nCTA: «Сохрани чтобы не забыть / отметь подругу которая тоже страдает»\n\nИдея 3: «Утренняя рутина клиентки Glow»\nХук: «5 минут — и она уже готова к встрече с директором»\nСтруктура: будильник 7:00 → быстрый уход (продукты которые мы рекомендуем) → образ готов → уходит на работу с улыбкой\nCTA: «Приходи на консультацию — подберём твою рутину»',
+    }
+  },
+
+  // ── VIDEO EDIT tasks ─────────────────────────────
+  {
+    id:'t-video-1',type:'video_edit',clientId:'marina',
+    title:'Монтаж Reels для кофейни',
+    desc:'Собери видео из сырых клипов. Без брака, с CTA!',
+    icon:'🎬',reward:{money:9000,xp:90,rep:22},deadline:5,
+    data:{
+      brief:'Reels 30-45 сек. Начни с крупного кофе, покажи процесс, атмосферу, в конце — CTA. БРАК не использовать!',
+      clips:[
+        {id:'v1',label:'Кофе крупно',emoji:'☕',dur:6,color:'#7c3aed',ok:true,type:'product'},
+        {id:'v2',label:'БРАК — пересвет',emoji:'⚠️',dur:4,color:'#dc2626',ok:false,type:'bad'},
+        {id:'v3',label:'Бариста работает',emoji:'👨‍🍳',dur:8,color:'#059669',ok:true,type:'process'},
+        {id:'v4',label:'Интерьер + уют',emoji:'🏠',dur:7,color:'#0891b2',ok:true,type:'atmo'},
+        {id:'v5',label:'БРАК — размыто',emoji:'💫',dur:3,color:'#dc2626',ok:false,type:'bad'},
+        {id:'v6',label:'Гости за столиком',emoji:'👥',dur:5,color:'#7c3aed',ok:true,type:'social'},
+        {id:'v7',label:'CTA: адрес + часы',emoji:'📍',dur:4,color:'#d97706',ok:true,type:'cta'},
+        {id:'v8',label:'Логотип заставка',emoji:'✨',dur:2,color:'#6366f1',ok:true,type:'logo'},
+      ],
+      reqs:[
+        {id:'r1',text:'Нет бракованных клипов',check:'noBad'},
+        {id:'r2',text:'Есть CTA в конце',check:'hasCTA'},
+        {id:'r3',text:'Длительность 30-45 сек',check:'duration'},
+        {id:'r4',text:'Начинается с продукта или процесса',check:'startsProd'},
+      ],
+      minDur:30,maxDur:45,
+    }
+  },
+  {
+    id:'t-video-2',type:'video_edit',clientId:'dmitry',
+    title:'Ролик для фитнес-клуба',
+    desc:'Создай мотивирующий Reels. Хук в первые 3 сек!',
+    icon:'🎬',reward:{money:11000,xp:110,rep:28},deadline:5,
+    data:{
+      brief:'Reels 45-60 сек. Начни с крутого хука (шок/интрига), покажи тренировку, добавь трансформацию, заверши CTA. Без пустых клипов!',
+      clips:[
+        {id:'f1',label:'Хук: "Ты устал?"',emoji:'🔥',dur:4,color:'#dc2626',ok:true,type:'hook'},
+        {id:'f2',label:'ПУСТОЙ клип',emoji:'⬛',dur:5,color:'#374151',ok:false,type:'bad'},
+        {id:'f3',label:'Тренировка зал',emoji:'🏋️',dur:10,color:'#059669',ok:true,type:'process'},
+        {id:'f4',label:'До/после',emoji:'💪',dur:8,color:'#7c3aed',ok:true,type:'transform'},
+        {id:'f5',label:'НЕУДАЧНЫЙ дубль',emoji:'❌',dur:6,color:'#dc2626',ok:false,type:'bad'},
+        {id:'f6',label:'Тренер совет',emoji:'🧑‍🏫',dur:9,color:'#0891b2',ok:true,type:'expert'},
+        {id:'f7',label:'Интерьер зала',emoji:'🏟️',dur:7,color:'#6366f1',ok:true,type:'atmo'},
+        {id:'f8',label:'CTA: запись',emoji:'📱',dur:4,color:'#d97706',ok:true,type:'cta'},
+      ],
+      reqs:[
+        {id:'r1',text:'Нет бракованных клипов',check:'noBad'},
+        {id:'r2',text:'Есть CTA в конце',check:'hasCTA'},
+        {id:'r3',text:'Длительность 45-60 сек',check:'duration'},
+        {id:'r4',text:'Начинается с хука',check:'startsHook'},
+      ],
+      minDur:45,maxDur:60,
+    }
+  },
+
+  // ── ANALYTICS tasks ──────────────────────────────
+  {
+    id:'t-analytics-1',type:'analytics',clientId:'marina',
+    title:'Анализ статистики за апрель',
+    desc:'Найди проблемы и дай рекомендации по данным',
+    icon:'📊',reward:{money:5500,xp:70,rep:18},deadline:4,
+    data:{
+      period:'Апрель 2025',
+      metrics:[
+        {id:'reach',label:'Охват',val:'12 450',prev:'8 200',chg:+51.8,unit:'чел',icon:'👁',status:'good',detail:'Охват вырос на 51% благодаря Reels — отличный результат!'},
+        {id:'er',label:'Вовлечённость (ER)',val:'4.8%',prev:'1.2%',chg:+300,unit:'',icon:'❤️',status:'good',detail:'ER 4.8% — выше среднего по нише (2-3%). Подписчики активны!'},
+        {id:'subs',label:'Новые подписчики',val:'+847',prev:'+120',chg:+606,unit:'',icon:'👥',status:'good',detail:'Органический рост без накрутки — устойчивый результат.'},
+        {id:'clicks',label:'Клики в профиль',val:'340',prev:'890',chg:-61.8,unit:'',icon:'🔗',status:'problem',detail:'Клики упали на 62%! Люди видят контент, но не заходят в профиль. Проблема с Bio или CTA.'},
+        {id:'saves',label:'Сохранения постов',val:'23',prev:'67',chg:-65.7,unit:'',icon:'🔖',status:'problem',detail:'Сохранения упали на 66%. Контент стал менее полезным — нужно больше образовательного.'},
+        {id:'stories',label:'Просмотры Stories',val:'180',prev:'920',chg:-80.4,unit:'',icon:'📖',status:'critical',detail:'КРИТИЧНО: Stories смотрят в 5 раз меньше людей! Нужно срочно менять формат и время публикации.'},
+      ],
+      questions:[
+        {
+          id:'q1',type:'multi',
+          q:'Выбери 2 метрики, требующие срочного внимания:',
+          correctIds:['clicks','stories'],
+          explanation:'Клики в профиль (-62%) и Stories (-80%) — критические проблемы. Остальные метрики растут!'
+        },
+        {
+          id:'q2',type:'single',
+          q:'Почему упали просмотры Stories (-80%)?',
+          opts:[
+            {t:'Публикуем Stories редко или в неудобное время (не в 18-21:00)',correct:true},
+            {t:'Instagram заблокировал наши Stories в алгоритме',correct:false},
+            {t:'Подписчики навсегда ушли из Stories в TikTok',correct:false},
+          ]
+        },
+        {
+          id:'q3',type:'single',
+          q:'Что рекомендуешь для роста кликов в профиль?',
+          opts:[
+            {t:'Обновить Bio: добавить УТП, ссылку и призыв к действию в каждый пост',correct:true},
+            {t:'Публиковать больше постов каждый день',correct:false},
+            {t:'Запустить розыгрыш подписок',correct:false},
+          ]
+        }
+      ]
+    }
+  },
+
+  // ── AI CONTENT tasks ─────────────────────────────
+  {
+    id:'t-ai-1',type:'ai_content',clientId:'dmitry',
+    title:'Создать контент-план через AI',
+    desc:'Напиши промпт — получи лучший контент-план',
+    icon:'🤖',reward:{money:4500,xp:60,rep:14},deadline:3,
+    data:{
+      brief:'Фитнес-клуб. ЦА: 25-40 лет, офисные работники. Нужны идеи для 5 постов в Instagram. Тон: мотивирующий, дружелюбный. Формат: Reels + карусели.',
+      promptOpts:[
+        {
+          id:'p1',label:'Базовый промпт',quality:'low',
+          text:'Придумай посты для фитнес-клуба',
+          output:`1. Пост о пользе спорта
+2. Фото зала
+3. Мотивационная цитата
+4. Акция на абонемент
+5. Расписание занятий`,
+          comment:'Слишком общо — AI не знает ЦА, формат, тон. Результат бесполезный.'
+        },
+        {
+          id:'p2',label:'Промпт с контекстом',quality:'mid',
+          text:'Придумай 5 идей постов для фитнес-клуба «Энергия». ЦА: офисные работники 25-40 лет. Тон: мотивирующий, дружелюбный. Форматы: Reels + карусели',
+          output:`🏋️ Reels: «5 упражнений в обеденный перерыв» — таймлапс офис→зал→офис
+💻 Карусель: «Почему болит спина после работы» (5 слайдов с причинами)
+🌅 Stories-опрос: «Когда вы тренируетесь?» → утром/вечером/никогда
+💪 Reels BTS: День из жизни тренера
+🎯 Карусель: «30 дней — первый результат» для начинающих`,
+          comment:'Уже намного лучше! Есть форматы и конкретные идеи. Но нет хука и CTA.'
+        },
+        {
+          id:'p3',label:'Экспертный промпт',quality:'high',
+          text:'Ты опытный SMM-специалист. Создай 5 идей постов для фитнес-клуба. ЦА: офисные работники 25-40, проблема — нет времени и быстрая усталость. Для каждой идеи укажи: тема, формат, хук (первая фраза), CTA. Тон: «Твоё тело — твой лучший офис»',
+          output:`1️⃣ Тема: «Спина устала от компьютера»
+   Формат: Reels 30 сек
+   Хук: «Ваш позвоночник переживает 8 часов стресса ежедневно»
+   CTA: «Приходи на пробную тренировку — первая бесплатно»
+
+2️⃣ Тема: «У меня нет времени на спорт»
+   Формат: Карусель 5 слайдов
+   Хук: «Говоришь "нет времени"? Посмотри что делает Алина — мама 2 детей и маркетолог»
+   CTA: «Сохрани — это твой план на следующую неделю»
+
+3️⃣ Тема: BTS тренера
+   Формат: Reels 45 сек
+   Хук: «5:30 утра. Пока ты спишь, Денис уже готовит твою тренировку»
+   CTA: «Запишись к Денису — расписание в Bio»
+
+4️⃣ Тема: Трансформация члена клуба
+   Формат: До/после карусель
+   Хук: «Сергей думал, что спорт — не для него. 90 дней назад он пришёл к нам»
+   CTA: «Твоя история начинается здесь → ссылка в Bio»
+
+5️⃣ Тема: Миф о фитнесе #1
+   Формат: Карусель 7 слайдов
+   Хук: «Буду тренироваться — стану качком». Это миф. И вот почему»
+   CTA: «Сохрани и покажи другу который боится зала»`,
+          comment:'Идеальный результат! Хуки цепляют, CTA конкретные, темы попадают в боль ЦА.'
+        },
+      ],
+      correctId:'p3',
+      lesson:'Чем конкретнее промпт — тем лучше результат AI. Роль + ЦА + проблема + структура = готовый контент-план за минуты.'
+    }
+  },
+
+  // ── CALENDAR tasks ───────────────────────────────
+  {
+    id:'t-calendar-1',type:'calendar',clientId:'alina',
+    title:'Собери контент-план на неделю',
+    desc:'Расставь посты по дням и времени публикации',
+    icon:'📅',reward:{money:6000,xp:75,rep:20},deadline:4,
+    data:{
+      days:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
+      posts:[
+        {id:'p1',label:'Reels: урок макияжа',emoji:'💄',type:'reels',color:'#7c3aed',bestDay:[0,2,4],bestTime:'18:00-21:00'},
+        {id:'p2',label:'Карусель: уход за кожей',emoji:'✨',type:'carousel',color:'#0891b2',bestDay:[1,3],bestTime:'12:00-14:00'},
+        {id:'p3',label:'Stories-опрос: любимый продукт',emoji:'📊',type:'stories',color:'#059669',bestDay:[0,1,2,3,4,5,6],bestTime:'любое'},
+        {id:'p4',label:'Фото: before/after',emoji:'🔄',type:'photo',color:'#d97706',bestDay:[3,5],bestTime:'12:00-14:00'},
+        {id:'p5',label:'Reels: обзор новинки',emoji:'🆕',type:'reels',color:'#7c3aed',bestDay:[4,5],bestTime:'18:00-21:00'},
+        {id:'p6',label:'Пост: история бренда',emoji:'📖',type:'post',color:'#6366f1',bestDay:[6],bestTime:'10:00-12:00'},
+      ],
+      timeSlots:['10:00','12:00','15:00','18:00','20:00'],
+      rules:[
+        'Не более 2 постов в один день',
+        'Reels лучше работают вечером (18-21)',
+        'Карусели — в обед (12-14)',
+        'В выходные — лёгкий контент',
+      ]
+    }
+  },
+];
+
+// ─── DEFAULT STATE ────────────────────────────────────────────────
+const defaultState=()=>({
+  money:12000,xp:0,level:1,rep:0,energy:100,
+  day:1,completedTasks:[],
+  playerName:'Алекс',
+  equipment:{camera:1,laptop:1,mic:1,light:1},
+  flags:{}, // consequence flags: {marina_strategy_chat: score, ...}
+});
+
+const loadState=()=>{
+  try{const s=localStorage.getItem(SAVE_KEY);if(s)return{...defaultState(),...JSON.parse(s)};}catch(e){}
+  return defaultState();
+};
+const saveState=(gs)=>{try{localStorage.setItem(SAVE_KEY,JSON.stringify(gs));}catch(e){}};
+
+// ─── UTILITIES ───────────────────────────────────────────────────
+const getLvl=(xp)=>LEVELS.slice().reverse().find(l=>xp>=(l.next===99999?0:LEVELS[l.lvl-2]?.next||0))||LEVELS[0];
+const getNextLvl=(xp)=>LEVELS.find(l=>xp<l.next)||LEVELS[LEVELS.length-1];
+const fmtMoney=(n)=>'₽'+n.toLocaleString('ru-RU');
+
+// ─── AI EVALUATOR ─────────────────────────────────────────────────
+// Evaluates free-text player response against keyword topic groups.
+// Each group is an array of synonyms — ONE hit = group covered.
+const evalResponse=(text,evalKeys={})=>{
+  const lower=text.toLowerCase();
+  const scoreGroup=(groups)=>{
+    if(!groups||groups.length===0)return 5;
+    const hits=groups.filter(g=>g.some(w=>lower.includes(w))).length;
+    return Math.min(10,Math.round((hits/groups.length)*10));
+  };
+  return{
+    confidence:scoreGroup(evalKeys.confidence),
+    expertise:scoreGroup(evalKeys.expertise),
+    sales:scoreGroup(evalKeys.sales),
+    objections:scoreGroup(evalKeys.objections),
+  };
+};
+const DIM_LABELS={confidence:'Уверенность',expertise:'Экспертность',sales:'Продажи',objections:'Возражения'};
+const DIM_ICONS={confidence:'💪',expertise:'🎓',sales:'💼',objections:'🛡️'};
+const getDimFeedback=(dim,score)=>{
+  const fb={
+    confidence:{
+      high:'Говоришь уверенно — клиент чувствует профессионала',
+      mid:'Немного больше уверенности: называй конкретные цифры и сроки',
+      low:'Ответ звучит неуверенно. Клиент может усомниться в экспертизе'
+    },
+    expertise:{
+      high:'Используешь профессиональные термины и данные — это впечатляет',
+      mid:'Добавь конкретные инструменты, метрики или алгоритмы',
+      low:'Нет специфики — ответ выглядит поверхностным'
+    },
+    sales:{
+      high:'Предлагаешь конкретное решение и берёшь инициативу — продаёшь экспертизу',
+      mid:'Можно чётче предложить следующий шаг и ценность',
+      low:'Не предложил решение — упустил возможность убедить клиента'
+    },
+    objections:{
+      high:'Отлично работаешь с возражением — аргументируешь, не соглашаешься вслепую',
+      mid:'Попробуй аргументировать точнее: данные, кейсы, логика',
+      low:'Возражение не отработано — клиент остался неубеждённым'
+    }
+  };
+  const level=score>=7?'high':score>=4?'mid':'low';
+  return{text:fb[dim][level],level};
+};
+
+// Evaluate a written task (content plan, strategy, etc.)
+const evalWriteTask=(text,rubric)=>{
+  const lower=text.toLowerCase();
+  return rubric.map(r=>({
+    ...r,
+    hit:r.keywords.some(k=>lower.includes(k)),
+  }));
+};
+
+// ─── NOTIFICATIONS ───────────────────────────────────────────────
+const NotifCtx=React.createContext(null);
+const NotifProvider=({children})=>{
+  const [notifs,setNotifs]=useState([]);
+  const push=useCallback((msg,type='info',icon='💡')=>{
+    const id=Date.now()+Math.random();
+    setNotifs(n=>[...n,{id,msg,type,icon}]);
+    setTimeout(()=>setNotifs(n=>n.filter(x=>x.id!==id)),4000);
+  },[]);
+  return(
+    <NotifCtx.Provider value={push}>
+      {children}
+      <div style={{position:'fixed',bottom:20,right:20,zIndex:9999,display:'flex',flexDirection:'column',gap:10}}>
+        {notifs.map(n=>(
+          <div key={n.id} className="notif slide-up">
+            <div style={{display:'flex',gap:10,alignItems:'flex-start'}}>
+              <span style={{fontSize:22}}>{n.icon}</span>
+              <div>
+                <div style={{fontSize:13,color:'#e2e8f0',lineHeight:1.5}}>{n.msg}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </NotifCtx.Provider>
+  );
+};
+const useNotif=()=>React.useContext(NotifCtx);
+
+// ─── HUD ─────────────────────────────────────────────────────────
+const Hud=({gs,screen,onNav,onShowSave})=>{
+  const lvl=LEVELS[Math.min(gs.level-1,LEVELS.length-1)];
+  const nextLvl=LEVELS[Math.min(gs.level,LEVELS.length-1)];
+  const xpCur=gs.xp-(LEVELS[gs.level-2]?.next||0);
+  const xpNeeded=nextLvl.next-(LEVELS[gs.level-2]?.next||0);
+  const pct=Math.min(100,Math.round(xpCur/xpNeeded*100));
+  const mob=useIsMobile();
+  return(
+    <div className="hud" style={{flexWrap:mob?'wrap':'nowrap'}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer'}} onClick={()=>onNav('office')}>
+        <span style={{fontSize:22}}>🖥️</span>
+        <span style={{fontSize:13,fontWeight:700,color:'#a78bfa'}}>Digital Studio Pro</span>
+      </div>
+      <div style={{width:1,height:24,background:'rgba(255,255,255,.1)'}}/>
+      <div className="hud-stat">
+        <span style={{fontSize:16}}>💰</span>
+        <span style={{color:'#fbbf24'}}>{fmtMoney(gs.money)}</span>
+      </div>
+      <div className="hud-stat">
+        <span style={{fontSize:16}}>⚡</span>
+        <span style={{color:'#a78bfa'}}>{gs.xp} XP</span>
+      </div>
+      <div className="hud-stat" style={{flexDirection:'column',alignItems:'flex-start',gap:2,minWidth:mob?90:140}}>
+        <div style={{display:'flex',justifyContent:'space-between',width:'100%'}}>
+          <span style={{fontSize:11,color:lvl.color,fontWeight:700}}>{lvl.title}</span>
+          <span style={{fontSize:10,color:'#4b5563'}}>{pct}%</span>
+        </div>
+        <div className="xp-bar" style={{width:'100%'}}>
+          <div className="xp-fill" style={{width:pct+'%'}}/>
+        </div>
+      </div>
+      <div className="hud-stat hud-hide-mobile">
+        <span style={{fontSize:16}}>⭐</span>
+        <span style={{color:'#f472b6'}}>{gs.rep} реп</span>
+      </div>
+      <div className="hud-stat hud-hide-mobile">
+        <span style={{fontSize:16}}>📅</span>
+        <span style={{color:'#94a3b8'}}>День {gs.day}</span>
+      </div>
+      <div className="hud-nav" style={{marginLeft:'auto',display:'flex',gap:6}}>
+        {['office','tasks','shop'].map(s=>(
+          <button key={s} onClick={()=>onNav(s)}
+            className="btn btn-secondary" style={{padding:'5px 12px',fontSize:12,
+              ...(screen===s?{background:'rgba(124,58,237,.2)',borderColor:'rgba(124,58,237,.4)',color:'#a78bfa'}:{})}}>
+            {s==='office'?'🏠 Офис':s==='tasks'?'📋 Задачи':'🛒 Магазин'}
+          </button>
+        ))}
+        <button onClick={onShowSave} className="btn btn-secondary" style={{padding:'5px 12px',fontSize:12}} title="Сохранить / загрузить прогресс">
+          {mob?'💾':'💾 Сохранить'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ─── OFFICE ──────────────────────────────────────────────────────
+const ZONES=[
+  {id:'chat',icon:'💬',label:'Мессенджер',desc:'Переписка с клиентами',color:'#059669'},
+  {id:'write',icon:'📝',label:'Текстовые задания',desc:'Стратегии, планы, идеи',color:'#0891b2'},
+  {id:'video_edit',icon:'🎬',label:'Монтажная',desc:'Редактор видео',color:'#7c3aed'},
+  {id:'analytics',icon:'📊',label:'Аналитика',desc:'Дашборды и отчёты',color:'#2563eb'},
+  {id:'ai_content',icon:'🤖',label:'AI Studio',desc:'Генерация контента',color:'#d97706'},
+  {id:'calendar',icon:'📅',label:'Планирование',desc:'Контент-календарь',color:'#ec4899'},
+  {id:'exam',icon:'🎓',label:'Финальный экзамен',desc:'Новый клиент · Сертификат',color:'#f59e0b',exam:true},
+];
+
+const Office=({gs,tasks,onNav})=>{
+  const tasksByZone={};
+  tasks.forEach(t=>{const z=t.type==='video_edit'?'video_edit':t.type==='ai_content'?'ai_content':t.type;if(!tasksByZone[z])tasksByZone[z]=[];tasksByZone[z].push(t);});
+  const mob=useIsMobile();
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',padding:mob?14:24,gap:mob?12:20,overflow:'auto'}} className="scroll-y">
+      <div>
+        <h1 style={{fontSize:mob?18:24,fontWeight:800,color:'#fff',marginBottom:4}}>Привет, {gs.playerName}! 👋</h1>
+        <p style={{color:'#64748b',fontSize:13}}>День {gs.day} · Выбери зону и приступай к работе</p>
+      </div>
+      <div className="office-grid" style={{display:'grid',gridTemplateColumns:mob?'repeat(2,1fr)':'repeat(3,1fr)',gap:mob?10:16}}>
+        {ZONES.map(z=>{
+          const zoneTasks=tasksByZone[z.id]||[];
+          const hasTasks=zoneTasks.length>0;
+          if(z.exam){return(
+            <div key={z.id} onClick={()=>onNav(z.id)} className="office-zone glow-anim"
+              style={{borderColor:'rgba(251,191,36,.5)',background:'rgba(251,191,36,.06)',cursor:'pointer',gridColumn:mob?'span 2':'span 3'}}>
+              <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:mob?'wrap':'nowrap'}}>
+                <span style={{fontSize:mob?36:52}}>{z.icon}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:mob?16:20,fontWeight:800,color:'#fbbf24',marginBottom:2}}>{z.label}</div>
+                  {!mob&&<div style={{fontSize:13,color:'#92400e',marginBottom:4}}>Пройди экзамен с новым клиентом → получи сертификат специалиста</div>}
+                  {mob&&<div style={{fontSize:12,color:'#92400e'}}>Новый клиент · Сертификат</div>}
+                </div>
+                <button className="btn" style={{background:'linear-gradient(135deg,#f59e0b,#d97706)',color:'#fff',padding:mob?'8px 16px':'12px 28px',fontSize:mob?12:14,boxShadow:'0 4px 20px rgba(245,158,11,.35)',flexShrink:0}}>
+                  Начать →
+                </button>
+              </div>
+            </div>
+          );}
+          return(
+            <div key={z.id} className={`office-zone${hasTasks?' has-task':''}`} onClick={()=>onNav(z.id)}>
+              {hasTasks&&<div className="task-dot"/>}
+              <div style={{fontSize:mob?32:44,marginBottom:mob?6:12}}>{z.icon}</div>
+              <div style={{fontSize:mob?13:17,fontWeight:700,color:'#fff',marginBottom:4}}>{z.label}</div>
+              {!mob&&<div style={{fontSize:13,color:'#64748b',marginBottom:12}}>{z.desc}</div>}
+              {hasTasks?(
+                <div style={{display:'flex',gap:4,flexDirection:'column'}}>
+                  {zoneTasks.slice(0,mob?1:2).map(t=>(
+                    <span key={t.id} style={{background:z.color+'25',color:z.color,border:`1px solid ${z.color}40`,borderRadius:8,padding:'3px 8px',fontSize:mob?10:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',display:'block'}}>
+                      {t.icon} {t.title.slice(0,mob?16:22)}…
+                    </span>
+                  ))}
+                </div>
+              ):(
+                <span style={{fontSize:12,color:'#374151'}}>Нет активных задач</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:mob?'repeat(2,1fr)':'repeat(3,1fr)',gap:mob?8:12}}>
+        {CLIENTS.map(c=>(
+          <div key={c.id} className="card" style={{padding:mob?10:14,display:'flex',alignItems:'center',gap:mob?8:12}}>
+            <span style={{fontSize:mob?24:32,flexShrink:0}}>{c.emoji}</span>
+            <div style={{minWidth:0}}>
+              <div style={{fontWeight:700,color:'#fff',fontSize:mob?12:13,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.name}</div>
+              <div style={{color:'#64748b',fontSize:mob?10:12,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.company}</div>
+              <div style={{color:c.accent,fontSize:10,marginTop:2}}>{c.niche}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─── TASK BOARD ──────────────────────────────────────────────────
+const TaskBoard=({tasks,completedTasks,onStart})=>{
+  const mob=useIsMobile();
+  return(
+  <div style={{flex:1,padding:mob?14:24,overflow:'auto'}} className="scroll-y">
+    <h2 style={{fontSize:mob?16:20,fontWeight:800,color:'#fff',marginBottom:mob?14:20}}>📋 Задачи</h2>
+    <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'1fr 1fr',gap:mob?12:20}}>
+      <div>
+        <div style={{fontSize:12,fontWeight:700,color:'#fbbf24',marginBottom:12,letterSpacing:1}}>⏳ В РАБОТЕ ({tasks.length})</div>
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          {tasks.length===0&&<div style={{color:'#374151',fontSize:14}}>Нет активных задач</div>}
+          {tasks.map(t=>{
+            const client=CLIENTS.find(c=>c.id===t.clientId);
+            return(
+              <div key={t.id} className="card slide-up" style={{padding:16,cursor:'pointer'}} onClick={()=>onStart(t)}>
+                <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
+                  <span style={{fontSize:28}}>{t.icon}</span>
+                  <div style={{flex:1}}>
+                    <div style={{fontWeight:700,color:'#fff',fontSize:14,marginBottom:3}}>{t.title}</div>
+                    <div style={{color:'#64748b',fontSize:12,marginBottom:8}}>{t.desc}</div>
+                    <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                      <span style={{background:'rgba(251,191,36,.15)',color:'#fbbf24',border:'1px solid rgba(251,191,36,.25)',borderRadius:6,padding:'2px 8px',fontSize:11,fontWeight:600}}>
+                        💰 {fmtMoney(t.reward.money)}
+                      </span>
+                      <span style={{background:'rgba(124,58,237,.15)',color:'#a78bfa',border:'1px solid rgba(124,58,237,.25)',borderRadius:6,padding:'2px 8px',fontSize:11,fontWeight:600}}>
+                        ⚡ +{t.reward.xp} XP
+                      </span>
+                      {client&&<span style={{background:'rgba(255,255,255,.06)',color:'#94a3b8',borderRadius:6,padding:'2px 8px',fontSize:11}}>
+                        {client.emoji} {client.name}
+                      </span>}
+                    </div>
+                  </div>
+                  <button className="btn btn-primary" style={{padding:'7px 14px',fontSize:12,flexShrink:0}}>Начать →</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div>
+        <div style={{fontSize:12,fontWeight:700,color:'#34d399',marginBottom:12,letterSpacing:1}}>✅ ВЫПОЛНЕНО ({completedTasks.length})</div>
+        <div style={{display:'flex',flexDirection:'column',gap:8}}>
+          {completedTasks.length===0&&<div style={{color:'#374151',fontSize:14}}>Пока ничего не выполнено</div>}
+          {completedTasks.map(t=>(
+            <div key={t.id} className="card" style={{padding:12,opacity:.7}}>
+              <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                <span style={{fontSize:20}}>{t.icon}</span>
+                <div>
+                  <div style={{color:'#94a3b8',fontSize:13,fontWeight:600}}>{t.title}</div>
+                  <div style={{color:'#374151',fontSize:11}}>+{fmtMoney(t.reward.money)} · +{t.reward.xp} XP</div>
+                </div>
+                <span style={{marginLeft:'auto',color:'#34d399',fontSize:18}}>✅</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+  );
+};
+
+// ─── CHAT (FREE-TEXT WITH AI EVALUATION) ─────────────────────────
+const EvalPanel=({evalResult,scene})=>{
+  const dims=['confidence','expertise','sales','objections'];
+  const avg=Math.round(dims.reduce((s,d)=>s+evalResult[d],0)/dims.length);
+  return(
+    <div className="slide-up" style={{background:'rgba(124,58,237,.06)',border:'1px solid rgba(124,58,237,.18)',borderRadius:12,padding:14,maxWidth:'90%'}}>
+      <div style={{fontSize:12,fontWeight:700,color:'#a78bfa',marginBottom:10,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <span>🤖 AI-оценка ответа</span>
+        <span style={{fontSize:13,color:avg>=7?'#34d399':avg>=4?'#fbbf24':'#f87171',fontWeight:800}}>{avg}/10</span>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:6}}>
+        {dims.map(d=>{
+          const sc=evalResult[d];
+          const fb=getDimFeedback(d,sc);
+          const col=fb.level==='high'?'#34d399':fb.level==='mid'?'#fbbf24':'#f87171';
+          return(
+            <div key={d}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:2}}>
+                <span style={{fontSize:11,color:'#94a3b8'}}>{DIM_ICONS[d]} {DIM_LABELS[d]}</span>
+                <span style={{fontSize:11,fontWeight:700,color:col}}>{sc}/10</span>
+              </div>
+              <div style={{height:4,borderRadius:2,background:'rgba(255,255,255,.07)',overflow:'hidden',marginBottom:3}}>
+                <div style={{height:'100%',borderRadius:2,background:col,width:(sc*10)+'%',transition:'width .6s ease'}}/>
+              </div>
+              <div style={{fontSize:11,color:'#64748b',lineHeight:1.4}}>{fb.text}</div>
+            </div>
+          );
+        })}
+      </div>
+      {avg<5&&scene?.hint&&(
+        <div style={{marginTop:10,padding:'8px 10px',background:'rgba(251,191,36,.07)',border:'1px solid rgba(251,191,36,.18)',borderRadius:8}}>
+          <div style={{fontSize:11,color:'#fbbf24',fontWeight:700,marginBottom:2}}>💡 Подсказка</div>
+          <div style={{fontSize:11,color:'#94a3b8',lineHeight:1.4}}>{scene.hint}</div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ChatScreen=({tasks,onComplete,onBack,onFlag,examClients})=>{
+  const mob=useIsMobile();
+  const [activeClient,setActiveClient]=useState(tasks[0]?.clientId||null);
+  const [taskStates,setTaskStates]=useState({});
+  const [draft,setDraft]=useState('');
+  const [evaluating,setEvaluating]=useState(false);
+  const notify=useNotif();
+  const messagesEndRef=useRef(null);
+  const textareaRef=useRef(null);
+
+  const activeTask=tasks.find(t=>t.clientId===activeClient&&t.type==='chat');
+  const ts=taskStates[activeClient]||{step:0,msgs:[],totalScore:0,scoreCount:0,done:false};
+
+  useEffect(()=>{
+    if(activeTask&&!taskStates[activeClient]){
+      const scene=activeTask.data.scenes[0];
+      setTaskStates(prev=>({...prev,[activeClient]:{
+        step:0,msgs:[{from:'client',text:scene.msg,scene}],totalScore:0,scoreCount:0,done:false
+      }}));
+    }
+  },[activeClient,activeTask]);
+
+  useEffect(()=>{messagesEndRef.current?.scrollIntoView({behavior:'smooth'})},[taskStates,evaluating]);
+
+  const sendMessage=()=>{
+    if(!activeTask||ts.done||evaluating)return;
+    const text=draft.trim();
+    if(text.length<15){notify('Напиши хотя бы несколько слов!','info','✏️');return;}
+    setDraft('');setEvaluating(true);
+    const step=ts.step;
+    const scene=activeTask.data.scenes[step];
+
+    setTimeout(()=>{
+      const evalResult=evalResponse(text,scene.evalKeys||{});
+      const avg=Math.round((evalResult.confidence+evalResult.expertise+evalResult.sales+evalResult.objections)/4);
+      const newMsgs=[
+        ...ts.msgs,
+        {from:'me',text},
+        {from:'ai_eval',evalResult,scene,avg}
+      ];
+      const newTotalScore=ts.totalScore+avg;
+      const newScoreCount=ts.scoreCount+1;
+      const nextStep=step+1;
+      const scenes=activeTask.data.scenes;
+
+      if(nextStep<scenes.length){
+        setTimeout(()=>{
+          const nextScene=scenes[nextStep];
+          setTaskStates(prev=>({...prev,[activeClient]:{
+            step:nextStep,
+            msgs:[...newMsgs,{from:'client',text:nextScene.msg,scene:nextScene}],
+            totalScore:newTotalScore,scoreCount:newScoreCount,done:false
+          }}));
+          setEvaluating(false);
+        },900);
+      } else {
+        setTaskStates(prev=>({...prev,[activeClient]:{
+          step:nextStep,msgs:newMsgs,totalScore:newTotalScore,scoreCount:newScoreCount,done:true
+        }}));
+        setEvaluating(false);
+        const finalAvg=Math.round(newTotalScore/newScoreCount);
+        const quality=finalAvg/10;
+        // store flag for consequences
+        if(activeTask.consequenceFlag&&onFlag){
+          onFlag(activeTask.consequenceFlag,finalAvg);
+        }
+        setTimeout(()=>{
+          notify(`Диалог завершён! Средняя оценка: ${finalAvg}/10 · +${Math.round(activeTask.reward.xp*quality)} XP`,'success','💬');
+          onComplete(activeTask,quality);
+        },1200);
+      }
+    },1400);
+  };
+
+  const currentScene=activeTask&&!ts.done&&!evaluating?activeTask.data.scenes[ts.step]:null;
+  const allClients=[...CLIENTS,...(examClients||[])];
+  const client=allClients.find(c=>c.id===activeClient);
+
+  const handleKey=(e)=>{
+    if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){sendMessage();}
+  };
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:mob?'column':'row',overflow:'hidden'}}>
+      {/* Sidebar — vertical on desktop, horizontal tabs on mobile */}
+      <div style={{
+        ...(mob
+          ? {display:'flex',flexDirection:'row',overflowX:'auto',borderBottom:'1px solid rgba(255,255,255,.07)',flexShrink:0,background:'rgba(0,0,0,.2)'}
+          : {width:220,borderRight:'1px solid rgba(255,255,255,.07)',display:'flex',flexDirection:'column',flexShrink:0}
+        )
+      }}>
+        {!mob&&<div style={{padding:'10px 14px',borderBottom:'1px solid rgba(255,255,255,.07)',flexShrink:0}}>
+          <div style={{fontSize:13,fontWeight:700,color:'#fff'}}>💬 Мессенджер</div>
+          <div style={{fontSize:11,color:'#4b5563',marginTop:1}}>Пишешь сам — AI оценит</div>
+        </div>}
+        <div style={{...(mob?{display:'flex',flexDirection:'row'}:{flex:1,overflowY:'auto'})}}>
+          {allClients.filter(c=>tasks.some(t=>t.clientId===c.id)).map(c=>{
+            const hasTask=tasks.find(t=>t.clientId===c.id&&t.type==='chat');
+            return(
+              <div key={c.id} onClick={()=>setActiveClient(c.id)}
+                style={mob?{
+                  padding:'10px 16px',cursor:'pointer',flexShrink:0,
+                  background:activeClient===c.id?'rgba(124,58,237,.15)':'transparent',
+                  borderBottom:activeClient===c.id?'3px solid #7c3aed':'3px solid transparent',
+                  display:'flex',alignItems:'center',gap:8,whiteSpace:'nowrap',
+                }:{
+                  padding:'12px 16px',cursor:'pointer',borderBottom:'1px solid rgba(255,255,255,.05)',
+                  background:activeClient===c.id?'rgba(124,58,237,.1)':'transparent',
+                  borderLeft:activeClient===c.id?'3px solid #7c3aed':'3px solid transparent',
+                  display:'flex',alignItems:'center',gap:10,
+                }}>
+                <span style={{fontSize:mob?22:26}}>{c.emoji}</span>
+                <div>
+                  <div style={{fontSize:mob?12:13,fontWeight:600,color:hasTask?'#e2e8f0':'#4b5563'}}>{c.name}</div>
+                  {!mob&&<div style={{fontSize:11,color:'#4b5563'}}>{c.company}</div>}
+                  {hasTask&&<div style={{fontSize:10,color:'#fbbf24',fontWeight:600}}>● новое</div>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Chat area */}
+      <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+        {activeTask?(
+          <>
+            {/* header */}
+            <div style={{padding:'10px 20px',borderBottom:'1px solid rgba(255,255,255,.07)',display:'flex',alignItems:'center',gap:10,flexShrink:0}}>
+              <span style={{fontSize:26}}>{client?.emoji}</span>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:700,color:'#fff',fontSize:14}}>{client?.name} · {client?.company}</div>
+                <div style={{fontSize:11,color:'#64748b'}}>{activeTask.title}</div>
+              </div>
+              {ts.scoreCount>0&&(
+                <div style={{background:'rgba(124,58,237,.15)',border:'1px solid rgba(124,58,237,.3)',borderRadius:8,padding:'4px 10px',fontSize:12,color:'#a78bfa',fontWeight:700}}>
+                  Ср. оценка: {Math.round(ts.totalScore/ts.scoreCount)}/10
+                </div>
+              )}
+            </div>
+
+            {/* messages */}
+            <div className="scroll-y" style={{flex:1,padding:'16px 20px',display:'flex',flexDirection:'column',gap:10}}>
+              {ts.msgs.map((msg,i)=>(
+                <div key={i} style={{display:'flex',flexDirection:'column',alignItems:msg.from==='me'?'flex-end':'flex-start',gap:6}}>
+                  {msg.from==='client'&&(
+                    <div style={{display:'flex',alignItems:'flex-end',gap:8}}>
+                      <span style={{fontSize:22,flexShrink:0}}>{client?.emoji}</span>
+                      <div className="chat-msg chat-from-client slide-up">{msg.text}</div>
+                    </div>
+                  )}
+                  {msg.from==='me'&&(
+                    <div className="chat-msg chat-from-me slide-up">{msg.text}</div>
+                  )}
+                  {msg.from==='ai_eval'&&(
+                    <EvalPanel evalResult={msg.evalResult} scene={msg.scene}/>
+                  )}
+                </div>
+              ))}
+              {evaluating&&(
+                <div style={{display:'flex',alignItems:'center',gap:8,padding:'8px 0'}}>
+                  <span style={{fontSize:18}}>{client?.emoji}</span>
+                  <div style={{background:'rgba(255,255,255,.06)',borderRadius:12,padding:'10px 14px',display:'flex',gap:5}}>
+                    <div className="ai-dot"/><div className="ai-dot"/><div className="ai-dot"/>
+                  </div>
+                  <span style={{fontSize:11,color:'#4b5563'}}>AI анализирует ответ...</span>
+                </div>
+              )}
+              {ts.done&&(
+                <div className="pop-in" style={{textAlign:'center',padding:20,background:'rgba(16,185,129,.07)',border:'1px solid rgba(16,185,129,.2)',borderRadius:14}}>
+                  <div style={{fontSize:36,marginBottom:8}}>🎉</div>
+                  <div style={{color:'#34d399',fontWeight:700,fontSize:16}}>Диалог завершён!</div>
+                  <div style={{color:'#64748b',fontSize:13,marginTop:4}}>
+                    Средняя оценка: {Math.round(ts.totalScore/ts.scoreCount)}/10 · {ts.scoreCount} сообщений
+                  </div>
+                  {Math.round(ts.totalScore/ts.scoreCount)<6&&(
+                    <div style={{marginTop:10,fontSize:12,color:'#fbbf24'}}>
+                      ⚠️ Клиент остался не вполне доволен — это может повлиять на следующие задачи
+                    </div>
+                  )}
+                </div>
+              )}
+              <div ref={messagesEndRef}/>
+            </div>
+
+            {/* input area */}
+            {currentScene&&!ts.done&&(
+              <div style={{padding:'14px 20px',borderTop:'1px solid rgba(255,255,255,.07)',flexShrink:0}}>
+                {currentScene.hint&&(
+                  <div style={{fontSize:11,color:'#4b5563',marginBottom:8,display:'flex',gap:6,alignItems:'center'}}>
+                    <span>💭</span>
+                    <span>Подумай о: <span style={{color:'#64748b'}}>{currentScene.hint}</span></span>
+                  </div>
+                )}
+                <div style={{display:'flex',gap:10,alignItems:'flex-end'}}>
+                  <textarea
+                    ref={textareaRef}
+                    className="game-textarea"
+                    style={{flex:1,minHeight:72,maxHeight:140,resize:'vertical'}}
+                    placeholder={mob?"Напиши ответ клиенту своими словами...":"Напиши ответ клиенту своими словами... (Ctrl+Enter — отправить)"}
+                    value={draft}
+                    onChange={e=>setDraft(e.target.value)}
+                    onKeyDown={handleKey}
+                    disabled={evaluating}
+                  />
+                  <button className="btn btn-primary" onClick={sendMessage}
+                    disabled={evaluating||draft.trim().length<5}
+                    style={{padding:'10px 18px',flexShrink:0,alignSelf:'flex-end'}}>
+                    {evaluating?<span className="spin-anim" style={{display:'inline-block'}}>⚙️</span>:'Отправить →'}
+                  </button>
+                </div>
+                <div style={{fontSize:10,color:'#374151',marginTop:5}}>
+                  {draft.length} символов · AI оценит уверенность, экспертность, продажи и работу с возражениями
+                </div>
+              </div>
+            )}
+          </>
+        ):(
+          <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <div style={{textAlign:'center',color:'#374151'}}>
+              <div style={{fontSize:48,marginBottom:12}}>💬</div>
+              <div style={{fontSize:16,color:'#4b5563'}}>Выбери клиента слева</div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── VIDEO EDITOR ────────────────────────────────────────────────
+const VideoEditor=({task,onComplete,onBack})=>{
+  const mob=useIsMobile();
+  const [shelf,setShelf]=useState([...task.data.clips]);
+  const [timeline,setTimeline]=useState([]);
+  const [selId,setSelId]=useState(null);
+  const [draggingId,setDraggingId]=useState(null);
+  const [dragSource,setDragSource]=useState(null);
+  const [dropping,setDropping]=useState(false);
+  const [preview,setPreview]=useState(false);
+  const [previewIdx,setPreviewIdx]=useState(0);
+  const [title,setTitle]=useState('');
+  const [result,setResult]=useState(null);
+  const notify=useNotif();
+  const previewTimer=useRef(null);
+
+  const totalDur=timeline.reduce((s,c)=>s+c.dur,0);
+
+  const startDragShelf=(e,clip)=>{
+    setDraggingId(clip.id);setDragSource('shelf');
+    e.dataTransfer.effectAllowed='move';
+  };
+  const startDragTl=(e,clip)=>{
+    setDraggingId(clip.id);setDragSource('timeline');
+    e.dataTransfer.effectAllowed='move';
+  };
+  const onDropTl=(e)=>{
+    e.preventDefault();setDropping(false);
+    if(!draggingId)return;
+    if(dragSource==='shelf'){
+      const clip=shelf.find(c=>c.id===draggingId);
+      if(clip){setTimeline(t=>[...t,clip]);setShelf(s=>s.filter(c=>c.id!==draggingId));}
+    }
+    setDraggingId(null);setDragSource(null);
+  };
+  const removeFromTl=(id)=>{
+    const clip=timeline.find(c=>c.id===id);
+    if(clip){setTimeline(t=>t.filter(c=>c.id!==id));setShelf(s=>[...s,clip]);if(selId===id)setSelId(null);}
+  };
+
+  const startPreview=()=>{
+    if(timeline.length===0)return;
+    setPreview(true);setPreviewIdx(0);
+    let i=0;
+    const next=()=>{
+      i++;
+      if(i<timeline.length){setPreviewIdx(i);previewTimer.current=setTimeout(next,timeline[i].dur*300);}
+      else{setPreview(false);setPreviewIdx(0);}
+    };
+    previewTimer.current=setTimeout(next,timeline[0].dur*300);
+  };
+  useEffect(()=>()=>{clearTimeout(previewTimer.current)},[]);
+
+  const evaluate=()=>{
+    const d=task.data;
+    const checks={
+      noBad:!timeline.some(c=>!c.ok),
+      hasCTA:timeline.some(c=>c.type==='cta'),
+      duration:totalDur>=d.minDur&&totalDur<=d.maxDur,
+      startsProd:timeline.length>0&&['product','process','hook'].includes(timeline[0].type),
+      startsHook:timeline.length>0&&timeline[0].type==='hook',
+    };
+    const reqs=d.reqs.map(r=>({...r,passed:checks[r.check]}));
+    const passed=reqs.filter(r=>r.passed).length;
+    const score=Math.round(passed/reqs.length*100);
+    setResult({score,reqs,checks});
+    const money=Math.round(task.reward.money*(score/100));
+    const xp=Math.round(task.reward.xp*(score/100));
+    notify(`Видео сдано! Оценка ${score}% · +${fmtMoney(money)} · +${xp} XP`,score>=75?'success':'info','🎬');
+    setTimeout(()=>onComplete(task,score/100),1500);
+  };
+
+  const previewClip=preview&&timeline[previewIdx];
+
+  if(result){
+    return(
+      <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:40,gap:24}} className="fade-in">
+        <div style={{fontSize:64}}>{result.score>=80?'🏆':result.score>=60?'👍':'📝'}</div>
+        <div style={{fontSize:28,fontWeight:800,color:'#fff'}}>Оценка монтажа: {result.score}%</div>
+        <div style={{display:'flex',flexDirection:'column',gap:8,width:'min(400px,90vw)'}}>
+          {result.reqs.map(r=>(
+            <div key={r.id} style={{display:'flex',align:'center',gap:10,padding:'10px 14px',borderRadius:10,
+              background:r.passed?'rgba(16,185,129,.1)':'rgba(220,38,38,.1)',
+              border:`1px solid ${r.passed?'rgba(16,185,129,.25)':'rgba(220,38,38,.25)'}`}}>
+              <span style={{fontSize:18}}>{r.passed?'✅':'❌'}</span>
+              <span style={{color:r.passed?'#6ee7b7':'#fca5a5',fontSize:13,fontWeight:500}}>{r.text}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{color:'#64748b',fontSize:13,textAlign:'center',maxWidth:400}}>
+          {result.score>=80?'Отличная работа! Клиент доволен.':result.score>=60?'Хорошо, но есть что улучшить.':'Нужно доработать — перечитай требования.'}
+        </div>
+      </div>
+    );
+  }
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      {/* Header */}
+      <div style={{padding:'12px 20px',borderBottom:'1px solid rgba(255,255,255,.07)',display:'flex',alignItems:'center',gap:12}}>
+        <span style={{fontSize:28}}>🎬</span>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:700,color:'#fff',fontSize:15}}>{task.title}</div>
+          <div style={{fontSize:12,color:'#64748b'}}>{task.data.brief}</div>
+        </div>
+        <div className="card" style={{padding:'8px 14px',fontSize:12,display:'flex',gap:12}}>
+          {task.data.reqs.map(r=>(
+            <span key={r.id} style={{color:'#64748b'}}>📌 {r.text}</span>
+          ))}
+        </div>
+      </div>
+      <div style={{flex:1,display:'flex',gap:0,overflow:mob?'auto':'hidden'}}>
+        {/* Left */}
+        <div style={{flex:1,display:'flex',flexDirection:'column',padding:mob?10:16,gap:12,overflow:mob?'visible':'hidden'}}>
+          {/* Clip shelf */}
+          <div className="card" style={{padding:14}}>
+            <div style={{fontSize:11,fontWeight:700,color:'#64748b',marginBottom:10,letterSpacing:.5}}>ИСХОДНЫЕ МАТЕРИАЛЫ — {mob?'нажми':'перетащи нужные клипы на таймлайн'}</div>
+            <div style={{display:'grid',gridTemplateColumns:mob?'repeat(3,1fr)':'repeat(4,1fr)',gap:8}}>
+              {shelf.map(c=>(
+                <div key={c.id}
+                  className={`clip-card${draggingId===c.id?' dragging-src':''}${!c.ok?' banned':''}`}
+                  style={{background:c.color+'18',borderColor:(draggingId===c.id?'transparent':c.ok?c.color+'35':'#dc262640'),cursor:'pointer'}}
+                  draggable onDragStart={e=>startDragShelf(e,c)}
+                  onClick={()=>{if(mob){setTimeline(t=>[...t,c]);setShelf(s=>s.filter(x=>x.id!==c.id));}}}>
+
+                  <div style={{fontSize:28,marginBottom:4}}>{c.emoji}</div>
+                  <div style={{fontSize:11,fontWeight:700,color:c.ok?'#e2e8f0':'#fca5a5',lineHeight:1.3}}>{c.label}</div>
+                  <div style={{fontSize:10,color:'#64748b',marginTop:3}}>{c.dur}с {!c.ok&&'⚠️'}</div>
+                </div>
+              ))}
+              {shelf.length===0&&<div style={{gridColumn:'1/-1',textAlign:'center',color:'#374151',padding:'12px 0',fontSize:13}}>Все клипы на таймлайне</div>}
+            </div>
+          </div>
+          {/* Timeline */}
+          <div className="card" style={{padding:14,flex:1}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
+              <div style={{fontSize:11,fontWeight:700,color:'#64748b',letterSpacing:.5}}>МОНТАЖНЫЙ СТОЛ (перетащи сюда)</div>
+              <div style={{fontSize:12,fontWeight:700,
+                color:totalDur===0?'#374151':totalDur>=task.data.minDur&&totalDur<=task.data.maxDur?'#34d399':'#f87171'}}>
+                ⏱ {totalDur}с / {task.data.minDur}-{task.data.maxDur}с
+              </div>
+            </div>
+            <div
+              className={`timeline-drop${dropping?' over':''}`}
+              onDragOver={e=>{e.preventDefault();setDropping(true);}}
+              onDragLeave={()=>setDropping(false)}
+              onDrop={onDropTl}
+              style={{minHeight:80}}>
+              {timeline.length===0&&(
+                <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',color:'#374151',fontSize:13,pointerEvents:'none'}}>
+                  ← Перетащи клипы сюда в нужном порядке
+                </div>
+              )}
+              {timeline.map((c,i)=>(
+                <div key={c.id}
+                  className={`tl-clip${selId===c.id?' sel-clip':''}`}
+                  style={{background:c.ok?c.color+'25':'#dc262625',border:`1px solid ${c.ok?c.color+'50':'#dc262660'}`,
+                    minWidth:c.dur*14+32,maxWidth:c.dur*18+48,cursor:'pointer'}}
+                  draggable
+                  onDragStart={e=>startDragTl(e,c)}
+                  onClick={()=>setSelId(selId===c.id?null:c.id)}>
+                  <span style={{fontSize:16}}>{c.emoji}</span>
+                  <span style={{color:'#e2e8f0',fontSize:10,lineHeight:1.2,textAlign:'center'}}>{c.label}</span>
+                  <span style={{color:'#64748b',fontSize:10}}>{c.dur}с</span>
+                </div>
+              ))}
+            </div>
+            {selId&&(
+              <button className="btn btn-danger" style={{marginTop:8,fontSize:12,padding:'6px 12px'}} onClick={()=>removeFromTl(selId)}>
+                🗑 Удалить выбранный клип
+              </button>
+            )}
+          </div>
+          {/* Actions */}
+          <div style={{display:'flex',gap:10}}>
+            <button className="btn btn-secondary" style={{flex:1}} onClick={startPreview} disabled={timeline.length===0||preview}>
+              {preview?'⏹ Стоп':'▶ Предпросмотр'}
+            </button>
+            <button className="btn btn-primary" style={{flex:1}} onClick={evaluate} disabled={timeline.length===0}>
+              📤 Сдать работу клиенту
+            </button>
+          </div>
+        </div>
+        {/* Right: monitor */}
+        {!mob&&<div style={{width:260,padding:16,display:'flex',flexDirection:'column',gap:12,borderLeft:'1px solid rgba(255,255,255,.07)'}}>
+          <div className="monitor" style={{flex:1}}>
+            {previewClip?(
+              <div style={{width:'100%',height:'100%',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',background:previewClip.color+'30',transition:'all .3s'}}>
+                <div style={{fontSize:56,marginBottom:8}} className="float-anim">{previewClip.emoji}</div>
+                <div style={{fontSize:13,fontWeight:700,color:'#fff',textAlign:'center',padding:'0 12px'}}>{previewClip.label}</div>
+                <div style={{fontSize:11,color:'#94a3b8',marginTop:4}}>{previewClip.dur} сек</div>
+                {title&&<div style={{position:'absolute',bottom:12,left:0,right:0,textAlign:'center'}}>
+                  <span style={{background:'rgba(0,0,0,.8)',color:'#fff',padding:'3px 10px',borderRadius:20,fontSize:12,fontWeight:700}}>{title}</span>
+                </div>}
+              </div>
+            ):(
+              <div style={{width:'100%',height:'100%',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                <div style={{fontSize:40,marginBottom:8}}>🎬</div>
+                <div style={{fontSize:12,color:'#4b5563',textAlign:'center'}}>Нажми ▶ для предпросмотра</div>
+              </div>
+            )}
+          </div>
+          <div className="card" style={{padding:12}}>
+            <div style={{fontSize:11,color:'#64748b',marginBottom:6}}>ТЕКСТ / ЗАГОЛОВОК</div>
+            <input className="game-input" style={{fontSize:12}} placeholder="Например: Кофейня «Арома»..." value={title} onChange={e=>setTitle(e.target.value)}/>
+          </div>
+          <div className="card" style={{padding:12}}>
+            <div style={{fontSize:11,color:'#64748b',marginBottom:8}}>ПОРЯДОК ({timeline.length} клипов)</div>
+            <div style={{display:'flex',flexDirection:'column',gap:4}}>
+              {timeline.map((c,i)=>(
+                <div key={c.id} style={{display:'flex',alignItems:'center',gap:6,fontSize:11}}>
+                  <span style={{color:'#374151',width:14,textAlign:'right'}}>{i+1}.</span>
+                  <span>{c.emoji}</span>
+                  <span style={{color:c.ok?'#cbd5e1':'#fca5a5',flex:1,overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{c.label}</span>
+                  <span style={{color:'#374151'}}>{c.dur}с</span>
+                </div>
+              ))}
+              {timeline.length===0&&<div style={{color:'#374151',fontSize:11}}>Пусто</div>}
+            </div>
+          </div>
+        </div>}
+      </div>
+    </div>
+  );
+};
+
+// ─── ANALYTICS ───────────────────────────────────────────────────
+const AnalyticsScreen=({task,onComplete,onBack})=>{
+  const d=task.data;
+  const [phase,setPhase]=useState('read'); // read → q1 → q2 → q3 → done
+  const [selMetrics,setSelMetrics]=useState([]);
+  const [answers,setAnswers]=useState({});
+  const [score,setScore]=useState(0);
+  const [showResult,setShowResult]=useState(false);
+  const notify=useNotif();
+
+  const toggleMetric=(id)=>{
+    setSelMetrics(prev=>prev.includes(id)?prev.filter(x=>x!==id):[...prev,id].slice(0,2));
+  };
+
+  const BarChart=({metrics})=>{
+    const vals=metrics.map(m=>{const n=parseFloat(m.val.replace(/[^\d.-]/g,''));return isNaN(n)?0:Math.abs(n);});
+    const max=Math.max(...vals,1);
+    return(
+      <svg width="100%" height="120" viewBox={`0 0 ${metrics.length*60} 120`} preserveAspectRatio="none">
+        {metrics.map((m,i)=>{
+          const h=Math.round((vals[i]/max)*90);
+          const x=i*60+10;
+          const color=m.status==='critical'?'#ef4444':m.status==='problem'?'#f97316':m.status==='good'?'#10b981':'#7c3aed';
+          return(
+            <g key={m.id}>
+              <rect x={x} y={110-h} width={40} height={h} rx="4" fill={color} fillOpacity=".7" style={{transformOrigin:`${x+20}px 110px`,animation:'chartBars .6s ease both',animationDelay:i*.1+'s'}}/>
+              <text x={x+20} y={115} textAnchor="middle" fill="#64748b" fontSize="9">{m.label.slice(0,8)}</text>
+              <text x={x+20} y={105-h} textAnchor="middle" fill="#e2e8f0" fontSize="9" fontWeight="bold">{m.chg>0?'+':''}{m.chg.toFixed(0)}%</text>
+            </g>
+          );
+        })}
+      </svg>
+    );
+  };
+
+  const submitQ1=()=>{
+    const q=d.questions[0];
+    const correct=q.correctIds.sort().join(',')===selMetrics.sort().join(',');
+    if(correct){setScore(s=>s+35);notify('Правильно! Отличный анализ ✅','success','📊');}
+    else{notify('Не совсем — подсказка: ищи красные метрики!','info','📊');}
+    setAnswers(a=>({...a,q1:{sel:selMetrics,correct}}));
+    setPhase('q2');
+  };
+
+  const submitQ23=(qid,idx)=>{
+    const qi=qid==='q2'?1:2;
+    const q=d.questions[qi];
+    const correct=q.opts[idx].correct;
+    if(correct){setScore(s=>s+(qi===1?35:30));notify('Правильно! ✅','success','💡');}
+    else{notify('Неверно — подумай ещё раз ⚠️','info','💡');}
+    setAnswers(a=>({...a,[qid]:{idx,correct}}));
+    if(qid==='q2')setPhase('q3');
+    else{
+      setPhase('done');setShowResult(true);
+      setTimeout(()=>{
+        const finalScore=score+(correct?30:0);
+        notify(`Анализ завершён! Оценка: ${Math.round((finalScore+35)/100*100)}% · +${task.reward.xp} XP`,'success','📊');
+        onComplete(task,(finalScore+35)/100);
+      },1500);
+    }
+  };
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      <div style={{padding:'12px 20px',borderBottom:'1px solid rgba(255,255,255,.07)',display:'flex',alignItems:'center',gap:12}}>
+        <span style={{fontSize:28}}>📊</span>
+        <div>
+          <div style={{fontWeight:700,color:'#fff',fontSize:15}}>{task.title}</div>
+          <div style={{fontSize:12,color:'#64748b'}}>{d.client} · {d.period}</div>
+        </div>
+      </div>
+      <div className="scroll-y" style={{flex:1,padding:'20px',display:'flex',gap:20}}>
+        <div style={{flex:1,display:'flex',flexDirection:'column',gap:16}}>
+          {/* Metrics grid */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10}}>
+            {d.metrics.map(m=>(
+              <div key={m.id}
+                className={`metric-card${m.status==='critical'||m.status==='problem'?' problem':m.status==='good'?' good':''}${selMetrics.includes(m.id)?' sel-metric':''}`}
+                onClick={()=>(phase==='q1'||phase==='read')&&toggleMetric(m.id)}>
+                <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:8}}>
+                  <div>
+                    <div style={{fontSize:11,color:'#64748b',fontWeight:600}}>{m.icon} {m.label}</div>
+                    <div style={{fontSize:22,fontWeight:800,color:'#fff',marginTop:2}}>{m.val}</div>
+                  </div>
+                  <div style={{textAlign:'right'}}>
+                    <div style={{fontSize:13,fontWeight:700,color:m.chg>0?'#34d399':'#f87171'}}>
+                      {m.chg>0?'↑':m.chg<0?'↓':'→'}{Math.abs(m.chg).toFixed(0)}%
+                    </div>
+                    <div style={{fontSize:10,color:'#374151'}}>vs пред.</div>
+                  </div>
+                </div>
+                <div style={{fontSize:10,color:'#4b5563',lineHeight:1.4}}>{m.detail}</div>
+                {selMetrics.includes(m.id)&&<div style={{fontSize:11,color:'#a78bfa',marginTop:6,fontWeight:600}}>✓ Выбрано</div>}
+              </div>
+            ))}
+          </div>
+          {/* Chart */}
+          <div className="card" style={{padding:16}}>
+            <div style={{fontSize:12,fontWeight:700,color:'#64748b',marginBottom:10}}>ИЗМЕНЕНИЕ МЕТРИК (% к предыдущему периоду)</div>
+            <BarChart metrics={d.metrics}/>
+          </div>
+          {/* Questions */}
+          <div className="card" style={{padding:16}}>
+            {phase==='read'&&(
+              <div>
+                <div style={{fontSize:14,fontWeight:700,color:'#fff',marginBottom:8}}>Изучи данные 👆</div>
+                <div style={{fontSize:13,color:'#64748b',marginBottom:14}}>Посмотри на метрики. Красные — проблемные, зелёные — хорошие. Когда разберёшься — перейди к вопросам.</div>
+                <button className="btn btn-primary" onClick={()=>setPhase('q1')}>Перейти к анализу →</button>
+              </div>
+            )}
+            {phase==='q1'&&(
+              <div>
+                <div style={{fontSize:14,fontWeight:700,color:'#fff',marginBottom:4}}>{d.questions[0].q}</div>
+                <div style={{fontSize:12,color:'#64748b',marginBottom:14}}>Кликни по 2 метрикам выше которые требуют внимания прямо сейчас.</div>
+                <div style={{fontSize:12,color:'#94a3b8',marginBottom:12}}>Выбрано: {selMetrics.length}/2 метрики</div>
+                <button className="btn btn-primary" disabled={selMetrics.length!==2} onClick={submitQ1}>Подтвердить выбор →</button>
+              </div>
+            )}
+            {phase==='q2'&&(
+              <div>
+                <div style={{fontSize:14,fontWeight:700,color:'#fff',marginBottom:12}}>{d.questions[1].q}</div>
+                {d.questions[1].opts.map((o,i)=>(
+                  <button key={i} className="chat-option" style={{marginBottom:8}} onClick={()=>submitQ23('q2',i)}>
+                    <span style={{color:'#64748b',marginRight:6,fontWeight:700}}>{String.fromCharCode(65+i)}.</span>{o.t}
+                  </button>
+                ))}
+              </div>
+            )}
+            {phase==='q3'&&(
+              <div>
+                <div style={{fontSize:14,fontWeight:700,color:'#fff',marginBottom:12}}>{d.questions[2].q}</div>
+                {d.questions[2].opts.map((o,i)=>(
+                  <button key={i} className="chat-option" style={{marginBottom:8}} onClick={()=>submitQ23('q3',i)}>
+                    <span style={{color:'#64748b',marginRight:6,fontWeight:700}}>{String.fromCharCode(65+i)}.</span>{o.t}
+                  </button>
+                ))}
+              </div>
+            )}
+            {phase==='done'&&(
+              <div className="pop-in" style={{textAlign:'center',padding:16}}>
+                <div style={{fontSize:40,marginBottom:8}}>📊</div>
+                <div style={{fontSize:18,fontWeight:700,color:'#34d399'}}>Анализ завершён!</div>
+                <div style={{fontSize:13,color:'#64748b',marginTop:4}}>Отличная работа с данными</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── AI CONTENT ──────────────────────────────────────────────────
+const AIStudioScreen=({task,onComplete,onBack})=>{
+  const d=task.data;
+  const [selPrompt,setSelPrompt]=useState(null);
+  const [generating,setGenerating]=useState(false);
+  const [generated,setGenerated]=useState(false);
+  const [selOutput,setSelOutput]=useState(null);
+  const [submitted,setSubmitted]=useState(false);
+  const [showLesson,setShowLesson]=useState(false);
+  const notify=useNotif();
+
+  const generate=()=>{
+    if(!selPrompt||generating)return;
+    setGenerating(true);
+    setTimeout(()=>{setGenerating(false);setGenerated(true);},2200);
+  };
+
+  const submit=()=>{
+    const correct=selPrompt===d.correctId;
+    setSubmitted(true);setShowLesson(true);
+    const pct=correct?1:selOutput?.id===d.correctId?0.75:0.4;
+    notify(`Контент-план готов! ${correct?'Промпт — отличный':'Можно лучше'} · +${task.reward.xp} XP`,correct?'success':'info','🤖');
+    setTimeout(()=>onComplete(task,pct),1500);
+  };
+
+  const prompt=d.promptOpts.find(p=>p.id===selPrompt);
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      <div style={{padding:'12px 20px',borderBottom:'1px solid rgba(255,255,255,.07)',display:'flex',gap:12,alignItems:'center'}}>
+        <span style={{fontSize:28}}>🤖</span>
+        <div>
+          <div style={{fontWeight:700,color:'#fff',fontSize:15}}>{task.title}</div>
+          <div style={{fontSize:12,color:'#64748b'}}>Выбери правильный промпт — получи лучший результат от AI</div>
+        </div>
+      </div>
+      <div className="scroll-y" style={{flex:1,padding:20,display:'flex',gap:20}}>
+        {/* Left */}
+        <div style={{flex:1,display:'flex',flexDirection:'column',gap:14}}>
+          <div className="card" style={{padding:16}}>
+            <div style={{fontSize:12,fontWeight:700,color:'#64748b',marginBottom:8}}>БРИФ КЛИЕНТА</div>
+            <div style={{fontSize:13,color:'#e2e8f0',lineHeight:1.6,background:'rgba(251,191,36,.05)',border:'1px solid rgba(251,191,36,.15)',borderRadius:10,padding:12}}>{d.brief}</div>
+          </div>
+          <div className="card" style={{padding:16}}>
+            <div style={{fontSize:12,fontWeight:700,color:'#64748b',marginBottom:12}}>ВЫБЕРИ ПРОМПТ ДЛЯ AI</div>
+            <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              {d.promptOpts.map(p=>(
+                <button key={p.id}
+                  className={`prompt-opt${selPrompt===p.id?' sel-prompt':''}`}
+                  onClick={()=>{setSelPrompt(p.id);setGenerated(false);setSelOutput(null);}}>
+                  <div style={{fontWeight:600,marginBottom:4}}>{p.label}</div>
+                  <div style={{color:'#64748b',fontSize:11,fontFamily:'monospace',whiteSpace:'pre-wrap',lineHeight:1.5}}>{p.text}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+          {selPrompt&&(
+            <button className="btn btn-primary" onClick={generate} disabled={generating||generated} style={{alignSelf:'flex-start'}}>
+              {generating?(
+                <><span className="spin-anim" style={{display:'inline-block'}}>⚙️</span> Генерирую...</>
+              ):generated?'✅ Готово — посмотри результат':'🤖 Запустить генерацию'}
+            </button>
+          )}
+        </div>
+        {/* Right: output */}
+        <div style={{width:380,display:'flex',flexDirection:'column',gap:14}}>
+          {generating&&(
+            <div className="card" style={{padding:24,display:'flex',flexDirection:'column',alignItems:'center',gap:12}}>
+              <div style={{fontSize:40}} className="spin-anim">⚙️</div>
+              <div style={{color:'#a78bfa',fontWeight:600}}>AI генерирует контент...</div>
+              <div style={{display:'flex',gap:5}}>
+                <div className="ai-dot"/><div className="ai-dot"/><div className="ai-dot"/>
+              </div>
+            </div>
+          )}
+          {generated&&prompt&&(
+            <div>
+              <div className="card" style={{padding:16,marginBottom:12}}>
+                <div style={{display:'flex',align:'center',justifyContent:'space-between',marginBottom:8}}>
+                  <div style={{fontSize:12,fontWeight:700,color:'#64748b'}}>РЕЗУЛЬТАТ AI</div>
+                  <div style={{fontSize:11,padding:'2px 8px',borderRadius:6,fontWeight:700,
+                    background:prompt.quality==='high'?'rgba(16,185,129,.15)':prompt.quality==='mid'?'rgba(251,191,36,.15)':'rgba(220,38,38,.15)',
+                    color:prompt.quality==='high'?'#34d399':prompt.quality==='mid'?'#fbbf24':'#fca5a5',
+                    border:`1px solid ${prompt.quality==='high'?'rgba(16,185,129,.25)':prompt.quality==='mid'?'rgba(251,191,36,.25)':'rgba(220,38,38,.25)'}`}}>
+                    {prompt.quality==='high'?'🔥 Отлично':prompt.quality==='mid'?'👍 Хорошо':'👎 Слабо'}
+                  </div>
+                </div>
+                <div style={{fontSize:12,color:'#e2e8f0',lineHeight:1.7,whiteSpace:'pre-wrap',fontFamily:prompt.quality==='high'?'inherit':'inherit'}}>{prompt.output}</div>
+              </div>
+              <div className="card" style={{padding:12,background:'rgba(124,58,237,.06)',borderColor:'rgba(124,58,237,.2)'}}>
+                <div style={{fontSize:11,color:'#a78bfa',fontWeight:700,marginBottom:4}}>💡 Оценка промпта</div>
+                <div style={{fontSize:12,color:'#94a3b8'}}>{prompt.comment}</div>
+              </div>
+              {!submitted&&(
+                <button className="btn btn-primary" style={{marginTop:12,width:'100%'}} onClick={submit}>
+                  📤 Отправить контент-план клиенту
+                </button>
+              )}
+            </div>
+          )}
+          {showLesson&&(
+            <div className="card pop-in" style={{padding:16,background:'rgba(251,191,36,.06)',borderColor:'rgba(251,191,36,.2)'}}>
+              <div style={{fontSize:13,fontWeight:700,color:'#fbbf24',marginBottom:8}}>📚 Главный урок</div>
+              <div style={{fontSize:13,color:'#e2e8f0',lineHeight:1.6}}>{d.lesson}</div>
+            </div>
+          )}
+          {!selPrompt&&!generating&&!generated&&(
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',flex:1,gap:12,color:'#374151'}}>
+              <div style={{fontSize:48}}>🤖</div>
+              <div style={{fontSize:14,textAlign:'center'}}>Выбери промпт слева<br/>и запусти генерацию</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── CALENDAR ────────────────────────────────────────────────────
+const CalendarScreen=({task,onComplete,onBack})=>{
+  const d=task.data;
+  const mob=useIsMobile();
+  const [pool,setPool]=useState([...d.posts]);
+  const [schedule,setSchedule]=useState(d.days.map(()=>[]));
+  const [selPost,setSelPost]=useState(null); // мобильный выбор
+  const [overDay,setOverDay]=useState(null);
+  const [dragPost,setDragPost]=useState(null);
+  const [submitted,setSubmitted]=useState(false);
+  const notify=useNotif();
+
+  /* ── DESKTOP: drag-and-drop ── */
+  const onDragStartPool=(e,post)=>{setDragPost({post,src:'pool'});e.dataTransfer.effectAllowed='move';};
+  const onDragStartSchedule=(e,post,dayIdx)=>{setDragPost({post,src:'schedule',dayIdx});e.dataTransfer.effectAllowed='move';};
+
+  const onDropDay=(e,dayIdx)=>{
+    e.preventDefault();setOverDay(null);
+    if(!dragPost)return;
+    const cur=schedule[dayIdx];
+    if(cur.length>=2){notify('Не более 2 постов в день!','info','📅');setDragPost(null);return;}
+    if(dragPost.src==='pool'){
+      setPool(p=>p.filter(x=>x.id!==dragPost.post.id));
+      setSchedule(s=>{const ns=[...s];ns[dayIdx]=[...ns[dayIdx],dragPost.post];return ns;});
+    } else if(dragPost.src==='schedule'&&dragPost.dayIdx!==dayIdx){
+      setSchedule(s=>{const ns=[...s];ns[dragPost.dayIdx]=ns[dragPost.dayIdx].filter(x=>x.id!==dragPost.post.id);ns[dayIdx]=[...ns[dayIdx],dragPost.post];return ns;});
+    }
+    setDragPost(null);
+  };
+
+  /* ── MOBILE: tap-to-select then tap-day ── */
+  const tapPost=(post,src,dayIdx)=>{
+    if(!mob)return;
+    if(selPost&&selPost.post.id===post.id&&selPost.src===src&&selPost.dayIdx===dayIdx){
+      // повторный тап — снять выделение
+      setSelPost(null);
+    } else {
+      setSelPost({post,src,dayIdx});
+    }
+  };
+  const tapDay=(dayIdx)=>{
+    if(!mob||!selPost)return;
+    const cur=schedule[dayIdx];
+    if(cur.length>=2){notify('Не более 2 постов в день!','info','📅');return;}
+    if(selPost.src==='pool'){
+      setPool(p=>p.filter(x=>x.id!==selPost.post.id));
+      setSchedule(s=>{const ns=[...s];ns[dayIdx]=[...ns[dayIdx],selPost.post];return ns;});
+    } else if(selPost.src==='schedule'&&selPost.dayIdx!==dayIdx){
+      setSchedule(s=>{const ns=[...s];ns[selPost.dayIdx]=ns[selPost.dayIdx].filter(x=>x.id!==selPost.post.id);ns[dayIdx]=[...ns[dayIdx],selPost.post];return ns;});
+    }
+    setSelPost(null);
+  };
+  const tapRemove=(post,dayIdx)=>{
+    setSchedule(s=>{const ns=[...s];ns[dayIdx]=ns[dayIdx].filter(x=>x.id!==post.id);return ns;});
+    setPool(p=>[...p,post]);
+    if(selPost&&selPost.post.id===post.id)setSelPost(null);
+  };
+
+  const removePost=(post,dayIdx)=>{
+    setSchedule(s=>{const ns=[...s];ns[dayIdx]=ns[dayIdx].filter(x=>x.id!==post.id);return ns;});
+    setPool(p=>[...p,post]);
+  };
+
+  const evaluate=()=>{
+    const filled=schedule.flat().length;
+    const score=Math.round(filled/d.posts.length*100);
+    setSubmitted(true);
+    notify(`Контент-план готов! ${filled}/${d.posts.length} постов расставлено · +${task.reward.xp} XP`,'success','📅');
+    setTimeout(()=>onComplete(task,score/100),1500);
+  };
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      <div style={{padding:'12px 20px',borderBottom:'1px solid rgba(255,255,255,.07)',display:'flex',gap:12,alignItems:'center'}}>
+        <span style={{fontSize:28}}>📅</span>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:700,color:'#fff',fontSize:15}}>{task.title}</div>
+          <div style={{fontSize:12,color:'#64748b'}}>{mob?'Нажми пост — выбери день':'Перетащи посты в нужные дни недели'}</div>
+        </div>
+        <button className="btn btn-primary" onClick={evaluate} disabled={submitted||pool.length===d.posts.length}>
+          📤 Утвердить план
+        </button>
+      </div>
+      <div style={{flex:1,display:'flex',overflow:'hidden',flexDirection:mob?'column':'row'}}>
+        {/* Pool */}
+        <div style={{width:mob?'100%':220,maxHeight:mob?180:undefined,borderRight:mob?'none':'1px solid rgba(255,255,255,.07)',borderBottom:mob?'1px solid rgba(255,255,255,.07)':'none',padding:14,display:'flex',flexDirection:mob?'row':'column',flexWrap:mob?'wrap':'nowrap',gap:8,overflowY:mob?'auto':undefined}}>
+          <div style={{width:'100%',fontSize:11,fontWeight:700,color:'#64748b',letterSpacing:.5}}>ПОСТЫ ({pool.length})</div>
+          <div style={{width:'100%',fontSize:11,color:'#374151',marginBottom:4}}>{mob?'Нажми пост → затем день':'Перетащи в нужный день →'}</div>
+          {pool.map(p=>(
+            <div key={p.id}
+              className="cal-post"
+              style={{background:p.color+(selPost&&selPost.post.id===p.id&&selPost.src==='pool'?'55':'20'),borderColor:p.color+(selPost&&selPost.post.id===p.id&&selPost.src==='pool'?'cc':'40'),color:'#e2e8f0',cursor:mob?'pointer':'grab',boxShadow:selPost&&selPost.post.id===p.id&&selPost.src==='pool'?`0 0 0 2px ${p.color}`:'none',transition:'all .15s'}}
+              draggable={!mob} onDragStart={mob?undefined:e=>onDragStartPool(e,p)}
+              onClick={()=>tapPost(p,'pool',undefined)}>
+              <div style={{display:'flex',align:'center',gap:6}}>
+                <span>{p.emoji}</span>
+                <span style={{fontSize:11,fontWeight:600}}>{p.label}</span>
+              </div>
+              <div style={{fontSize:10,color:'#64748b',marginTop:2}}>{p.type} · {p.bestTime}</div>
+            </div>
+          ))}
+          {pool.length===0&&<div style={{color:'#374151',fontSize:12,textAlign:'center',paddingTop:20,width:'100%'}}>Все посты расставлены ✅</div>}
+          {!mob&&<div style={{marginTop:'auto',background:'rgba(255,255,255,.03)',borderRadius:10,padding:10}}>
+            <div style={{fontSize:11,color:'#64748b',fontWeight:700,marginBottom:6}}>📌 ПРАВИЛА</div>
+            {d.rules.map((r,i)=><div key={i} style={{fontSize:10,color:'#4b5563',marginBottom:3}}>• {r}</div>)}
+          </div>}
+        </div>
+        {/* Calendar grid */}
+        <div className="scroll-y" style={{flex:1,padding:14}}>
+          {mob&&selPost&&<div style={{textAlign:'center',fontSize:12,color:'#a78bfa',marginBottom:8,fontWeight:600}}>📌 Выбран: {selPost.post.emoji} {selPost.post.label} — нажми на день</div>}
+          <div style={{display:'grid',gridTemplateColumns:mob?'repeat(4,1fr)':'repeat(7,1fr)',gap:mob?6:8}}>
+            {d.days.map((day,i)=>(
+              <div key={day}>
+                <div style={{fontSize:mob?10:12,fontWeight:700,color:'#64748b',textAlign:'center',marginBottom:6,padding:'4px 0'}}>{day}</div>
+                <div
+                  className={`cal-day${overDay===i?' over':''}${mob&&selPost?' mob-droppable':''}`}
+                  style={mob&&selPost?{borderColor:'rgba(167,139,250,.5)',background:'rgba(167,139,250,.05)',cursor:'pointer'}:{}}
+                  onDragOver={mob?undefined:e=>{e.preventDefault();setOverDay(i);}}
+                  onDragLeave={mob?undefined:()=>setOverDay(null)}
+                  onDrop={mob?undefined:e=>onDropDay(e,i)}
+                  onClick={()=>tapDay(i)}>
+                  {schedule[i].map(p=>(
+                    <div key={p.id}
+                      className="cal-post"
+                      style={{background:p.color+'25',borderColor:p.color+'40',color:'#e2e8f0',cursor:mob?'pointer':'grab'}}
+                      draggable={!mob} onDragStart={mob?undefined:e=>onDragStartSchedule(e,p,i)}
+                      onDoubleClick={mob?undefined:()=>removePost(p,i)}
+                      onClick={mob?e=>{e.stopPropagation();tapRemove(p,i)}:undefined}>
+                      <div style={{display:'flex',align:'center',gap:4}}>
+                        <span style={{fontSize:12}}>{p.emoji}</span>
+                        <span style={{fontSize:10,fontWeight:600,lineHeight:1.2}}>{p.label}</span>
+                      </div>
+                      {mob&&<div style={{fontSize:9,color:'#ef4444',marginTop:2}}>✕ убрать</div>}
+                    </div>
+                  ))}
+                  {schedule[i].length===0&&(
+                    <div style={{height:50,display:'flex',alignItems:'center',justifyContent:'center',color:'#1f2937',fontSize:10}}>пусто</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          {mob&&<div style={{marginTop:12,background:'rgba(255,255,255,.03)',borderRadius:10,padding:10}}>
+            <div style={{fontSize:11,color:'#64748b',fontWeight:700,marginBottom:6}}>📌 ПРАВИЛА</div>
+            {d.rules.map((r,i)=><div key={i} style={{fontSize:10,color:'#4b5563',marginBottom:3}}>• {r}</div>)}
+          </div>}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── SHOP ────────────────────────────────────────────────────────
+const Shop=({gs,setGs})=>{
+  const notify=useNotif();
+  const eq=[
+    {id:'camera',icon:'📷',label:'Камера',desc:'Улучшает оценку видео на +10% за уровень',prices:[0,8000,20000,45000]},
+    {id:'laptop',icon:'💻',label:'Ноутбук',desc:'Быстрее обрабатывает аналитику',prices:[0,12000,30000,60000]},
+    {id:'mic',icon:'🎙️',label:'Микрофон',desc:'Качество звука в Reels',prices:[0,5000,15000,35000]},
+    {id:'light',icon:'💡',label:'Свет',desc:'Профессиональный свет для съёмок',prices:[0,6000,18000,40000]},
+  ];
+  const upgrades=[
+    {id:'team1',icon:'👩‍💼',label:'Ассистент SMM',desc:'Берёт на себя планирование контента',price:25000},
+    {id:'team2',icon:'🎨',label:'Дизайнер',desc:'Делает карточки и обложки за тебя',price:40000},
+    {id:'team3',icon:'🎬',label:'Видеограф',desc:'Снимает и монтирует Reels',price:55000},
+  ];
+  const buy=(item,cost)=>{
+    if(gs.money<cost){notify('Недостаточно средств!','error','💸');return;}
+    setGs(g=>{
+      const ng={...g,money:g.money-cost};
+      if(item.id&&!upgrades.find(u=>u.id===item.id)){
+        ng.equipment={...ng.equipment,[item.id]:(ng.equipment[item.id]||1)+1};
+      }
+      return ng;
+    });
+    notify(`Куплено: ${item.label}! 🎉`,'success','🛒');
+  };
+  return(
+    <div style={{flex:1,padding:24,overflow:'auto'}} className="scroll-y">
+      <h2 style={{fontSize:20,fontWeight:800,color:'#fff',marginBottom:4}}>🛒 Магазин апгрейдов</h2>
+      <div style={{color:'#64748b',fontSize:14,marginBottom:24}}>Твой бюджет: <span style={{color:'#fbbf24',fontWeight:700}}>{fmtMoney(gs.money)}</span></div>
+      <div style={{fontSize:13,fontWeight:700,color:'#94a3b8',marginBottom:14,letterSpacing:.5}}>ОБОРУДОВАНИЕ</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:14,marginBottom:28}}>
+        {eq.map(e=>{
+          const curLvl=gs.equipment[e.id]||1;
+          const nextPrice=e.prices[curLvl];
+          const maxed=curLvl>=e.prices.length;
+          return(
+            <div key={e.id} className="card" style={{padding:18,display:'flex',gap:14,alignItems:'center'}}>
+              <span style={{fontSize:36}}>{e.icon}</span>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:700,color:'#fff',fontSize:14}}>{e.label}</div>
+                <div style={{fontSize:12,color:'#64748b',marginBottom:6}}>{e.desc}</div>
+                <div style={{display:'flex',gap:4}}>
+                  {e.prices.slice(1).map((_,i)=>(
+                    <div key={i} style={{width:20,height:6,borderRadius:3,background:i<curLvl-1?'#7c3aed':i===curLvl-1?'rgba(124,58,237,.3)':'rgba(255,255,255,.08)'}}/>
+                  ))}
+                  <span style={{fontSize:11,color:'#64748b',marginLeft:4}}>Ур. {curLvl}</span>
+                </div>
+              </div>
+              <button className="btn btn-primary" style={{fontSize:12,padding:'7px 14px'}} disabled={maxed||!nextPrice}
+                onClick={()=>buy(e,nextPrice)}>
+                {maxed?'МАКС':fmtMoney(nextPrice)}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{fontSize:13,fontWeight:700,color:'#94a3b8',marginBottom:14,letterSpacing:.5}}>КОМАНДА</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14}}>
+        {upgrades.map(u=>(
+          <div key={u.id} className="card" style={{padding:18}}>
+            <div style={{fontSize:36,marginBottom:8}}>{u.icon}</div>
+            <div style={{fontWeight:700,color:'#fff',fontSize:14,marginBottom:4}}>{u.label}</div>
+            <div style={{fontSize:12,color:'#64748b',marginBottom:14}}>{u.desc}</div>
+            <button className="btn btn-primary" style={{width:'100%',fontSize:12}} onClick={()=>buy(u,u.price)}>
+              {fmtMoney(u.price)}
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─── WRITE TASK ───────────────────────────────────────────────────
+const WriteTask=({task,onComplete,onBack,onFlag})=>{
+  const mob=useIsMobile();
+  const d=task.data;
+  const [text,setText]=useState('');
+  const [checking,setChecking]=useState(false);
+  const [result,setResult]=useState(null);
+  const [showExample,setShowExample]=useState(false);
+  const notify=useNotif();
+
+  const wordCount=text.trim().split(/\s+/).filter(Boolean).length;
+  const charCount=text.trim().length;
+
+  const submit=()=>{
+    if(charCount<d.minLength){
+      notify(`Слишком коротко! Минимум ${d.minLength} символов.`,'info','✏️');return;
+    }
+    setChecking(true);
+    setTimeout(()=>{
+      const checkedRubric=evalWriteTask(text,d.rubric);
+      const totalPts=checkedRubric.reduce((s,r)=>s+(r.hit?r.pts:0),0);
+      const maxPts=checkedRubric.reduce((s,r)=>s+r.pts,0);
+      const quality=totalPts/maxPts;
+      setResult({rubric:checkedRubric,totalPts,maxPts,quality});
+      setChecking(false);
+      if(task.consequenceFlag&&onFlag){onFlag(task.consequenceFlag,Math.round(quality*10));}
+      const grade=quality>=0.8?'🔥 Отлично':quality>=0.6?'👍 Хорошо':quality>=0.4?'⚠️ Слабовато':'❌ Нужно доработать';
+      notify(`${grade} · ${totalPts}/${maxPts} баллов · +${Math.round(task.reward.xp*quality)} XP`,'success','📝');
+      setTimeout(()=>onComplete(task,quality),2000);
+    },1800);
+  };
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:mob?'column':'row',overflow:mob?'auto':'hidden'}}>
+      {/* Left: task + input */}
+      <div style={{flex:1,display:'flex',flexDirection:'column',overflow:mob?'visible':'hidden'}}>
+        <div style={{padding:'12px 20px',borderBottom:'1px solid rgba(255,255,255,.07)',display:'flex',gap:12,alignItems:'center',flexShrink:0}}>
+          <span style={{fontSize:28}}>{task.icon}</span>
+          <div style={{flex:1}}>
+            <div style={{fontWeight:700,color:'#fff',fontSize:15}}>{task.title}</div>
+            <div style={{fontSize:12,color:'#64748b'}}>Пишешь сам — AI оценит по критериям</div>
+          </div>
+          {result&&(
+            <div style={{background:result.quality>=0.7?'rgba(16,185,129,.15)':'rgba(251,191,36,.15)',
+              border:`1px solid ${result.quality>=0.7?'rgba(16,185,129,.3)':'rgba(251,191,36,.3)'}`,
+              borderRadius:10,padding:'6px 14px',textAlign:'center'}}>
+              <div style={{fontSize:18,fontWeight:800,color:result.quality>=0.7?'#34d399':'#fbbf24'}}>{result.totalPts}/{result.maxPts}</div>
+              <div style={{fontSize:10,color:'#64748b'}}>баллов</div>
+            </div>
+          )}
+        </div>
+
+        <div className="scroll-y" style={{flex:1,padding:20,display:'flex',flexDirection:'column',gap:14}}>
+          {/* Brief */}
+          <div className="card" style={{padding:14}}>
+            <div style={{fontSize:11,fontWeight:700,color:'#64748b',marginBottom:6}}>БРИФ КЛИЕНТА</div>
+            <div style={{fontSize:13,color:'#e2e8f0',lineHeight:1.6,background:'rgba(251,191,36,.04)',border:'1px solid rgba(251,191,36,.12)',borderRadius:8,padding:10}}>
+              {d.brief}
+            </div>
+          </div>
+          {/* Task */}
+          <div className="card" style={{padding:14,borderColor:'rgba(124,58,237,.2)'}}>
+            <div style={{fontSize:11,fontWeight:700,color:'#a78bfa',marginBottom:6}}>📋 ТВОЁ ЗАДАНИЕ</div>
+            <div style={{fontSize:13,color:'#e2e8f0',lineHeight:1.6}}>{d.task}</div>
+          </div>
+          {/* Textarea */}
+          {!result&&(
+            <div>
+              <textarea
+                className="game-textarea"
+                style={{minHeight:220,resize:'vertical',fontSize:13,lineHeight:1.7}}
+                placeholder="Пиши здесь... Используй профессиональные термины, структурируй текст."
+                value={text}
+                onChange={e=>setText(e.target.value)}
+                disabled={checking}
+              />
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:8}}>
+                <div style={{fontSize:11,color:charCount>=d.minLength?'#34d399':'#64748b'}}>
+                  {charCount} / {d.minLength} символов (минимум) · {wordCount} слов
+                </div>
+                <div style={{display:'flex',gap:8}}>
+                  <button className="btn btn-secondary" style={{fontSize:12}} onClick={()=>setShowExample(!showExample)}>
+                    {showExample?'Скрыть пример':'💡 Пример'}
+                  </button>
+                  <button className="btn btn-primary" onClick={submit} disabled={checking||charCount<d.minLength}>
+                    {checking?<><span className="spin-anim" style={{display:'inline-block'}}>⚙️</span> Анализирую...</>:'📤 Сдать на оценку'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {result&&(
+            <div className="pop-in" style={{textAlign:'center',padding:16,background:'rgba(16,185,129,.06)',border:'1px solid rgba(16,185,129,.2)',borderRadius:12}}>
+              <div style={{fontSize:32,marginBottom:6}}>{result.quality>=0.8?'🔥':result.quality>=0.6?'👍':'⚠️'}</div>
+              <div style={{fontWeight:700,color:result.quality>=0.7?'#34d399':'#fbbf24',fontSize:15}}>
+                {result.quality>=0.8?'Отличная работа!':result.quality>=0.6?'Хорошая работа!':'Можно лучше'}
+              </div>
+              <div style={{color:'#64748b',fontSize:12,marginTop:4}}>{result.totalPts}/{result.maxPts} баллов · {Math.round(result.quality*100)}%</div>
+            </div>
+          )}
+          {showExample&&!result&&(
+            <div className="card slide-up" style={{padding:14,borderColor:'rgba(251,191,36,.2)'}}>
+              <div style={{fontSize:11,fontWeight:700,color:'#fbbf24',marginBottom:8}}>💡 Пример хорошего ответа</div>
+              <div style={{fontSize:12,color:'#94a3b8',lineHeight:1.7,whiteSpace:'pre-wrap'}}>{d.exampleAnswer}</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Right: rubric */}
+      <div style={{
+        width:mob?'100%':300,
+        borderLeft:mob?'none':'1px solid rgba(255,255,255,.07)',
+        borderTop:mob?'1px solid rgba(255,255,255,.07)':'none',
+        display:'flex',flexDirection:'column',flexShrink:0
+      }}>
+        <div style={{padding:'12px 16px',borderBottom:'1px solid rgba(255,255,255,.07)'}}>
+          <div style={{fontSize:13,fontWeight:700,color:'#fff'}}>📊 Критерии оценки</div>
+          <div style={{fontSize:11,color:'#4b5563',marginTop:2}}>AI проверяет каждый пункт</div>
+        </div>
+        <div className="scroll-y" style={{flex:1,padding:14,display:'flex',flexDirection:'column',gap:10}}>
+          {d.rubric.map(r=>{
+            const hit=result?result.rubric.find(x=>x.id===r.id)?.hit:null;
+            return(
+              <div key={r.id} className="card" style={{padding:12,
+                borderColor:hit===true?'rgba(16,185,129,.3)':hit===false?'rgba(220,38,38,.25)':'rgba(255,255,255,.08)',
+                background:hit===true?'rgba(16,185,129,.05)':hit===false?'rgba(220,38,38,.04)':'rgba(255,255,255,.02)'}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
+                  <span style={{fontSize:13,fontWeight:700,color:hit===true?'#34d399':hit===false?'#f87171':'#fff'}}>{r.label}</span>
+                  <span style={{fontSize:12,fontWeight:800,color:'#a78bfa'}}>{r.pts} бал</span>
+                </div>
+                {hit!==null&&(
+                  <div style={{fontSize:11,fontWeight:700,color:hit?'#34d399':'#f87171',marginBottom:4}}>
+                    {hit?'✅ Есть':'❌ Не найдено'}
+                  </div>
+                )}
+                <div style={{fontSize:11,color:'#4b5563',lineHeight:1.4}}>{r.tip}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── TASK LAUNCHER ───────────────────────────────────────────────
+const TaskLauncher=({task,gs,onComplete,onBack,onFlag})=>{
+  if(task.type==='chat')return<ChatScreen tasks={[task]} onComplete={onComplete} onBack={onBack} onFlag={onFlag}/>;
+  if(task.type==='write')return<WriteTask task={task} onComplete={onComplete} onBack={onBack} onFlag={onFlag}/>;
+  if(task.type==='video_edit')return<VideoEditor task={task} onComplete={onComplete} onBack={onBack}/>;
+  if(task.type==='analytics')return<AnalyticsScreen task={task} onComplete={onComplete} onBack={onBack}/>;
+  if(task.type==='ai_content')return<AIStudioScreen task={task} onComplete={onComplete} onBack={onBack}/>;
+  if(task.type==='calendar')return<CalendarScreen task={task} onComplete={onComplete} onBack={onBack}/>;
+  return<div style={{padding:40,color:'#64748b'}}>Неизвестный тип задачи</div>;
+};
+
+// ─── ZONE SCREEN (pick task) ─────────────────────────────────────
+const ZoneScreen=({zoneId,tasks,onStartTask,onBack})=>{
+  const zone=ZONES.find(z=>z.id===zoneId);
+  const zoneTasks=tasks.filter(t=>{
+    if(zoneId==='video_edit')return t.type==='video_edit';
+    if(zoneId==='ai_content')return t.type==='ai_content';
+    return t.type===zoneId;
+  });
+  return(
+    <div style={{flex:1,padding:24,overflow:'auto'}} className="scroll-y">
+      <button onClick={onBack} className="btn btn-secondary" style={{marginBottom:20,padding:'7px 14px',fontSize:13}}>← Назад</button>
+      <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:20}}>
+        <span style={{fontSize:40}}>{zone?.icon}</span>
+        <div>
+          <h2 style={{fontSize:22,fontWeight:800,color:'#fff'}}>{zone?.label}</h2>
+          <p style={{color:'#64748b',fontSize:14}}>{zone?.desc}</p>
+        </div>
+      </div>
+      {zoneTasks.length===0?(
+        <div style={{textAlign:'center',padding:'60px 20px',color:'#374151'}}>
+          <div style={{fontSize:40,marginBottom:12}}>✅</div>
+          <div style={{fontSize:16}}>Нет активных задач в этой зоне</div>
+          <div style={{fontSize:13,marginTop:8}}>Отличная работа! Проверь другие зоны.</div>
+        </div>
+      ):(
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          {zoneTasks.map(t=>{
+            const client=CLIENTS.find(c=>c.id===t.clientId);
+            return(
+              <div key={t.id} className="card slide-up" style={{padding:20}}>
+                <div style={{display:'flex',gap:14,alignItems:'flex-start'}}>
+                  <span style={{fontSize:36}}>{t.icon}</span>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:16,fontWeight:700,color:'#fff',marginBottom:4}}>{t.title}</div>
+                    <div style={{fontSize:13,color:'#64748b',marginBottom:12}}>{t.desc}</div>
+                    <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                      <span style={{background:'rgba(251,191,36,.12)',color:'#fbbf24',borderRadius:8,padding:'3px 10px',fontSize:12,fontWeight:700,border:'1px solid rgba(251,191,36,.2)'}}>💰 {fmtMoney(t.reward.money)}</span>
+                      <span style={{background:'rgba(124,58,237,.12)',color:'#a78bfa',borderRadius:8,padding:'3px 10px',fontSize:12,fontWeight:700,border:'1px solid rgba(124,58,237,.2)'}}>⚡ +{t.reward.xp} XP</span>
+                      <span style={{background:'rgba(244,114,182,.12)',color:'#f472b6',borderRadius:8,padding:'3px 10px',fontSize:12,fontWeight:700,border:'1px solid rgba(244,114,182,.2)'}}>⭐ +{t.reward.rep}</span>
+                      {client&&<span style={{background:'rgba(255,255,255,.06)',color:'#94a3b8',borderRadius:8,padding:'3px 10px',fontSize:12}}>{client.emoji} {client.name} · {client.company}</span>}
+                    </div>
+                  </div>
+                  <button className="btn btn-primary" onClick={()=>onStartTask(t)}>Начать →</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── INTRO ───────────────────────────────────────────────────────
+const Intro=({onStart})=>{
+  const [name,setName]=useState('Алекс');
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:40,background:'radial-gradient(ellipse at 50% 50%,rgba(124,58,237,.12) 0%,transparent 70%)'}}>
+      <div className="pop-in" style={{textAlign:'center',maxWidth:500}}>
+        <div style={{fontSize:72,marginBottom:16}} className="float-anim">🖥️</div>
+        <h1 style={{fontSize:36,fontWeight:900,color:'#fff',marginBottom:8}}>Digital Studio Pro</h1>
+        <p style={{color:'#64748b',fontSize:16,marginBottom:8}}>Симулятор реальной работы digital-специалиста</p>
+        <p style={{color:'#4b5563',fontSize:13,marginBottom:32,lineHeight:1.7}}>
+          Монтируй видео · Ведёшь клиентские переписки · Анализируй статистику<br/>
+          Используй AI · Планируй контент · Строй агентство
+        </p>
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:13,color:'#64748b',marginBottom:8,textAlign:'left'}}>Как тебя зовут?</div>
+          <input className="game-input" style={{fontSize:15,textAlign:'center',marginBottom:16}} value={name} onChange={e=>setName(e.target.value)} placeholder="Твоё имя..."/>
+        </div>
+        <button className="btn btn-primary" style={{padding:'14px 40px',fontSize:16}} onClick={()=>onStart(name)}>
+          🚀 Начать карьеру
+        </button>
+        <div style={{marginTop:20,display:'flex',gap:20,justifyContent:'center'}}>
+          {['🎬 Монтаж','💬 Клиенты','📊 Аналитика','🤖 AI','📅 Планирование'].map(f=>(
+            <span key={f} style={{fontSize:12,color:'#374151'}}>{f}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── CONSEQUENCE ENGINE ───────────────────────────────────────────
+// Maps flag names to consequence descriptions shown in the Office
+// ─── EXAM DATA ────────────────────────────────────────────────────
+const EXAM_CLIENT={id:'elena',name:'Елена',company:'Пекарня «Тесто и Счастье»',emoji:'👩‍🍳',color:'#92400e',accent:'#fcd34d',niche:'HoReCa / Food'};
+
+const EXAM_TASKS=[
+  {
+    step:1,type:'chat',icon:'💬',title:'Первый созвон с клиентом',
+    desc:'Елена только открыла пекарню. Ответь на её вопросы — убеди в своей экспертизе.',
+    scenes:[
+      {from:'Елена',msg:'Здравствуйте! Я открыла пекарню месяц назад, подписчиков почти нет. Хочу Instagram — но не знаю с чего начать. Вы поможете?',
+       hint:'Прими проект уверенно. Объясни с чего начнёшь: аудит, стратегия, контент.',
+       evalKeys:{
+         confidence:[['помогу','берусь','возьмусь','уверен','отличный проект'],['начнём','приступим','сделаем']],
+         expertise:[['аудит','анализ','стратег','целев'],['контент','reels','instagram','охват']],
+         sales:[['первый шаг','план','этапы','предлагаю'],['результат','цель','рост']],
+         objections:[['понимаю','слышу','бывает','новый бизнес','частая ситуация'],['именно для этого','как раз']],
+       }
+      },
+      {from:'Елена',msg:'А сколько времени займёт пока появятся подписчики? Хочу за неделю тысячу!',
+       hint:'Скажи честно: тысяча за неделю нереально. Дай реальные сроки и объясни почему.',
+       evalKeys:{
+         confidence:[['честно','скажу прямо','реальность такова','объясню'],['уверен в сроках','чёткий план']],
+         expertise:[['органический','алгоритм','2-4 недели','месяц'],['накрутка','качество','вовлечённость']],
+         sales:[['реально','достижимо','гарантирую результат'],['план','этапы','промежуточный']],
+         objections:[['тысяча за неделю','нереалист','понимаю желание','но важно'],['долгосрочно','устойчиво']],
+       }
+      },
+      {from:'Елена',msg:'Понятно. А что вы будете публиковать? У меня нет фотографа.',
+       hint:'Предложи решение проблемы с контентом: Reels на телефон, бариста за кадром, UGC.',
+       evalKeys:{
+         confidence:[['организую','предлагаю','решим','берём'],['сделаем без фотографа','справимся']],
+         expertise:[['reels','телефон','iphone','съёмка','контент'],['бариста','процесс','кухня','закулисье']],
+         sales:[['конкретный план','в первую неделю','приеду','организую съёмку'],['контент на месяц']],
+         objections:[['фотограф необязателен','телефон достаточно','живой контент'],['сейчас это работает']],
+       }
+      },
+    ]
+  },
+  {
+    step:2,type:'write',icon:'📝',title:'Написать стратегию для пекарни',
+    desc:'На основе созвона — составь SMM-стратегию. AI проверит по 5 критериям.',
+    brief:'Пекарня «Тесто и Счастье», Симферополь. Открылась месяц назад. Подписчиков ~50. ЦА: 25-45 лет, семьи и молодые пары. Цель: узнаваемость и первые продажи через Instagram.',
+    task:'Напиши SMM-стратегию для пекарни на первый месяц. Включи: цели, ЦА, контент-микс, тональность, KPI.',
+    minLength:150,
+    rubric:[
+      {id:'r1',label:'Цели',pts:20,keywords:['цель','подписчик','охват','продаж','kpi','задача','результат'],tip:'Конкретные цели: +Х подписчиков, охват, продажи'},
+      {id:'r2',label:'Целевая аудитория',pts:20,keywords:['аудитория','цел','семь','пар','25-45','возраст','портрет','мам','папа','дет'],tip:'Кто покупает хлеб и выпечку? Опиши детально'},
+      {id:'r3',label:'Контент-микс',pts:20,keywords:['reels','stories','карусель','пост','видео','рецепт','процесс','закулисье'],tip:'Форматы: Reels, Stories, карусели. Что показываем?'},
+      {id:'r4',label:'Тональность',pts:20,keywords:['тон','tov','стиль','тёпл','домашн','уют','дружелюб','живой','обращение'],tip:'Голос бренда: домашний, тёплый, как бабушкина кухня'},
+      {id:'r5',label:'KPI и метрики',pts:20,keywords:['kpi','метрик','охват','er','вовлечённость','клики','контроль','динамик','отчёт'],tip:'Как поймём что стратегия работает?'},
+    ],
+    exampleAnswer:'SMM-стратегия для пекарни «Тесто и Счастье» — апрель\n\nЦЕЛИ: +300 подписчиков за месяц, охват 8000 чел, ER > 4%, 20 обращений через Direct.\n\nЦЕЛЕВАЯ АУДИТОРИЯ: 25-45 лет, семьи с детьми и молодые пары. Боль — хочется домашнего вкуса в городе. В Instagram заходят утром и вечером.\n\nКОНТЕНТ-МИКС: 40% Reels (процесс выпечки, закулисье кухни), 30% Stories (опросы, ежедневный ассортимент), 20% карусели (рецепты, история бренда), 10% фото-посты.\n\nТОНАЛЬНОСТЬ: Тёплая, домашняя, как у бабушки. Обращение на «ты». Много историй и эмоций — «испечено с любовью».\n\nKPI: Еженедельный замер охвата и ER. Отчёт на 2-й и 4-й неделе.',
+  },
+  {
+    step:3,type:'write',icon:'📋',title:'Контент-план на неделю',
+    desc:'Елена утвердила стратегию. Теперь нужен конкретный план на 7 дней.',
+    brief:'Пекарня «Тесто и Счастье». Тон: тёплый, домашний. Публикуем утром (8-9) и вечером (18-20). Акцент на свежую выпечку, процесс и атмосферу.',
+    task:'Напиши контент-план на 7 дней. Для каждого дня: тема, формат (Reels/Stories/пост/карусель), хук или первая фраза, CTA.',
+    minLength:200,
+    rubric:[
+      {id:'r1',label:'7 дней',pts:20,keywords:['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье','пн','вт','ср','чт','пт','сб','вс','день 1','день 2','день 3'],tip:'Каждому дню — хотя бы одна публикация'},
+      {id:'r2',label:'Форматы',pts:20,keywords:['reels','stories','карусель','пост','фото','видео','рилс','сторис'],tip:'Указывай конкретный формат для каждой публикации'},
+      {id:'r3',label:'Темы пекарни',pts:20,keywords:['выпечк','хлеб','рецепт','тесто','пирог','круассан','булоч','печен','кухн','бариста','пекарь'],tip:'Темы должны отражать жизнь пекарни'},
+      {id:'r4',label:'Хуки',pts:20,keywords:['хук','первая фраза','пока','утром','запах','угадай','знаешь ли','а вы знали','представь','сегодня'],tip:'Хук = первые 2 секунды, которые останавливают скролл'},
+      {id:'r5',label:'CTA',pts:20,keywords:['cta','призыв','сохрани','поделись','приходи','заказывай','ссылка','напиши','отметь','голосуй'],tip:'Каждый пост заканчивается призывом к действию'},
+    ],
+    exampleAnswer:'КОНТЕНТ-ПЛАН «ТЕСТО И СЧАСТЬЕ» — НЕДЕЛЯ\n\nПн — Reels: Утро пекаря / Хук: «5:30 утра. Пока город спит, у нас уже пахнет свежим хлебом» / CTA: сохрани если ты тоже утренний человек\n\nВт — Stories: опрос «Что любишь больше?» круассан vs булочка / CTA: голосуй!\n\nСр — Карусель: «5 рецептов которые мы печём каждый день» / Хук: «А вы знали что наш хлеб готовится 8 часов?» / CTA: сохрани\n\nЧт — Reels BTS: Тесто месится, руки в муке / Хук: «Вот что происходит за 3 часа до открытия» / CTA: отметь того кто любит выпечку\n\nПт — Пост: пятничный ассортимент + скидка / Хук: «Пятница — повод побаловать себя» / CTA: приходи до 12:00\n\nСб — Reels: очередь с утра / Хук: «Суббота 9 утра — уже очередь. Вот почему» / CTA: приходи пораньше\n\nВс — Stories: «Что испечь на следующей неделе?» голосование / CTA: напиши в комментарии',
+  },
+  {
+    step:4,type:'video_edit',icon:'🎬',title:'Смонтировать первый Reels',
+    desc:'Елена прислала сырые клипы. Смонтируй Reels 30-45 сек. Без брака, начни с хука!',
+    brief:'Reels 30-45 сек для пекарни. Хук в начале — первые 3 сек решают всё! Покажи процесс, продукт, атмосферу. CTA в конце.',
+    clips:[
+      {id:'e1',label:'Хук: тесто поднимается',emoji:'🫓',dur:4,color:'#dc2626',ok:true,type:'hook'},
+      {id:'e2',label:'БРАК — тёмный кадр',emoji:'⚠️',dur:3,color:'#374151',ok:false,type:'bad'},
+      {id:'e3',label:'Руки месят тесто',emoji:'👐',dur:7,color:'#059669',ok:true,type:'process'},
+      {id:'e4',label:'Горячий хлеб из печи',emoji:'🍞',dur:6,color:'#7c3aed',ok:true,type:'product'},
+      {id:'e5',label:'БРАК — размытое фото',emoji:'💫',dur:3,color:'#374151',ok:false,type:'bad'},
+      {id:'e6',label:'Витрина с выпечкой',emoji:'🥐',dur:5,color:'#0891b2',ok:true,type:'atmo'},
+      {id:'e7',label:'Довольный покупатель',emoji:'😊',dur:4,color:'#6366f1',ok:true,type:'social'},
+      {id:'e8',label:'CTA: адрес и цены',emoji:'📍',dur:4,color:'#d97706',ok:true,type:'cta'},
+    ],
+    reqs:[
+      {id:'r1',text:'Нет бракованных клипов',check:'noBad'},
+      {id:'r2',text:'Есть CTA в конце',check:'hasCTA'},
+      {id:'r3',text:'Длительность 30-45 сек',check:'duration'},
+      {id:'r4',text:'Начинается с хука',check:'startsHook'},
+    ],
+    minDur:30,maxDur:45,
+  },
+];
+
+// Grade thresholds
+const getGrade=(pct)=>{
+  if(pct>=90)return{label:'A+',title:'Мастер',color:'#fbbf24',emoji:'🏆',desc:'Блестящий результат! Ты готов к реальным клиентам.'};
+  if(pct>=80)return{label:'A',title:'Эксперт',color:'#34d399',emoji:'🥇',desc:'Отличная работа. Уверенно начинай с реальными клиентами.'};
+  if(pct>=70)return{label:'B',title:'Специалист',color:'#60a5fa',emoji:'🥈',desc:'Хороший уровень. Ещё немного практики — и вперёд!'};
+  if(pct>=55)return{label:'C',title:'Стажёр',color:'#a78bfa',emoji:'🥉',desc:'Базу знаешь, но нужно повторить стратегию и общение с клиентами.'};
+  return{label:'D',title:'Новичок',color:'#f87171',emoji:'📚',desc:'Пройди курс ещё раз перед работой с реальными клиентами.'};
+};
+
+// ─── CERTIFICATE ──────────────────────────────────────────────────
+const Certificate=({playerName,grade,pct,skillScores,date,onClose})=>{
+  const printCert=()=>{
+    const w=window.open('','_blank');
+    const html=document.getElementById('cert-content').outerHTML;
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{background:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+      .cert{width:794px;min-height:562px;background:linear-gradient(135deg,#0f0f1e 0%,#1a0a2e 50%,#0a1628 100%);border:3px solid #7c3aed;border-radius:16px;padding:48px 56px;color:#fff;position:relative;box-shadow:0 0 60px rgba(124,58,237,.3)}
+      .cert-border{position:absolute;inset:8px;border:1px solid rgba(124,58,237,.3);border-radius:10px;pointer-events:none}
+      .cert-logo{font-size:14px;color:#6b7280;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px}
+      .cert-title{font-size:13px;color:#7c3aed;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px}
+      .cert-main{font-size:42px;font-weight:900;color:#fff;margin-bottom:6px}
+      .cert-name{font-size:32px;font-weight:700;color:#a78bfa;margin-bottom:4px}
+      .cert-sub{font-size:14px;color:#6b7280;margin-bottom:28px}
+      .cert-grade-box{display:inline-block;background:rgba(124,58,237,.2);border:2px solid #7c3aed;border-radius:12px;padding:12px 28px;margin-bottom:24px}
+      .cert-grade{font-size:48px;font-weight:900;color:#fbbf24}
+      .cert-grade-title{font-size:16px;color:#a78bfa;font-weight:700}
+      .cert-pct{font-size:14px;color:#6b7280;margin-top:4px}
+      .cert-skills{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:20px 0}
+      .skill-item{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+      .skill-name{font-size:13px;color:#94a3b8}
+      .skill-score{font-size:14px;font-weight:700;color:#a78bfa}
+      .cert-footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:24px;border-top:1px solid rgba(255,255,255,.1);padding-top:20px}
+      .cert-date{font-size:12px;color:#4b5563}
+      .cert-sig{font-size:13px;color:#6b7280;text-align:right}
+    </style>
+    </head><body>${html}</body></html>`);
+    w.document.close();
+    setTimeout(()=>w.print(),500);
+  };
+
+  return(
+    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,.85)',zIndex:9999,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:20}} className="fade-in">
+      <div id="cert-content" className="cert" style={{
+        width:'min(794px,95vw)',background:'linear-gradient(135deg,#0f0f1e 0%,#1a0a2e 50%,#0a1628 100%)',
+        border:'3px solid #7c3aed',borderRadius:16,padding:'48px 56px',color:'#fff',position:'relative',
+        boxShadow:'0 0 80px rgba(124,58,237,.35)',
+      }}>
+        <div style={{position:'absolute',inset:8,border:'1px solid rgba(124,58,237,.3)',borderRadius:10,pointerEvents:'none'}}/>
+        <div className="cert-logo" style={{fontSize:12,color:'#6b7280',letterSpacing:4,textTransform:'uppercase',marginBottom:20}}>Digital Studio Pro · Симулятор профессии</div>
+        <div className="cert-title" style={{fontSize:11,color:'#7c3aed',letterSpacing:4,textTransform:'uppercase',marginBottom:6}}>Настоящим удостоверяется, что</div>
+        <div className="cert-main" style={{fontSize:38,fontWeight:900,color:'#fff',marginBottom:4}}>СЕРТИФИКАТ</div>
+        <div className="cert-name" style={{fontSize:30,fontWeight:700,color:'#a78bfa',marginBottom:4}}>выдан {playerName}</div>
+        <div className="cert-sub" style={{fontSize:13,color:'#6b7280',marginBottom:24}}>за успешное прохождение финального экзамена по профессии SMM-специалист</div>
+
+        <div style={{display:'flex',gap:24,alignItems:'flex-start',marginBottom:20}}>
+          <div className="cert-grade-box" style={{background:'rgba(124,58,237,.15)',border:'2px solid #7c3aed',borderRadius:12,padding:'14px 28px',textAlign:'center'}}>
+            <div style={{fontSize:52,lineHeight:1}}>{grade.emoji}</div>
+            <div className="cert-grade" style={{fontSize:40,fontWeight:900,color:grade.color,lineHeight:1.1}}>{grade.label}</div>
+            <div className="cert-grade-title" style={{fontSize:14,color:'#a78bfa',fontWeight:700}}>{grade.title}</div>
+            <div className="cert-pct" style={{fontSize:12,color:'#6b7280',marginTop:4}}>{pct}% · {pct}из 100</div>
+          </div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:12,color:'#64748b',marginBottom:10,letterSpacing:1,textTransform:'uppercase'}}>Подтверждённые навыки</div>
+            <div className="cert-skills" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+              {skillScores.map((s,i)=>(
+                <div key={i} style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.09)',borderRadius:8,padding:'9px 13px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <span style={{fontSize:12,color:'#94a3b8'}}>{s.icon} {s.label}</span>
+                  <span style={{fontSize:13,fontWeight:700,color:s.score>=7?'#34d399':s.score>=5?'#fbbf24':'#f87171'}}>{s.score}/10</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div style={{fontSize:12,color:'#374151',background:'rgba(124,58,237,.07)',border:'1px solid rgba(124,58,237,.15)',borderRadius:8,padding:'10px 14px',marginBottom:20,fontStyle:'italic'}}>
+          «{grade.desc}»
+        </div>
+
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',borderTop:'1px solid rgba(255,255,255,.08)',paddingTop:16}}>
+          <div style={{fontSize:11,color:'#4b5563'}}>
+            <div>Дата выдачи: {date}</div>
+            <div style={{marginTop:2}}>Digital Studio Pro · Экзамен пройден</div>
+          </div>
+          <div style={{textAlign:'right',fontSize:11,color:'#6b7280'}}>
+            <div style={{fontSize:20,marginBottom:4}}>🎓</div>
+            <div>Уровень: Junior SMM Specialist</div>
+            <div style={{color:'#7c3aed',fontWeight:700,marginTop:2}}>ОФИЦИАЛЬНЫЙ ДОКУМЕНТ</div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:'flex',gap:12,marginTop:20}}>
+        <button className="btn btn-primary" style={{padding:'12px 28px',fontSize:14}} onClick={printCert}>
+          🖨️ Распечатать / Скачать PDF
+        </button>
+        <button className="btn btn-secondary" style={{padding:'12px 22px',fontSize:14}} onClick={onClose}>
+          ✕ Закрыть
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ─── EXAM SCREEN ─────────────────────────────────────────────────
+const ExamScreen=({gs,onFinish,onBack})=>{
+  const mob=useIsMobile();
+  const [step,setStep]=useState(0); // 0=intro, 1-4=tasks, 5=results
+  const [scores,setScores]=useState([]); // [{step, quality, label}]
+  const [showCert,setShowCert]=useState(false);
+  const [currentTaskKey,setCurrentTaskKey]=useState(0);
+  const notify=useNotif();
+
+  const task=EXAM_TASKS[step-1];
+
+  const handleTaskComplete=(quality)=>{
+    const t=EXAM_TASKS[step-1];
+    const newScore={step,quality,label:t.title,icon:t.icon};
+    const newScores=[...scores,newScore];
+    setScores(newScores);
+    if(step<EXAM_TASKS.length){
+      setStep(step+1);
+      setCurrentTaskKey(k=>k+1);
+      notify(`Задание ${step} выполнено! ${Math.round(quality*100)}% · Следующее задание...`,'success',t.icon);
+    } else {
+      setStep(5); // results
+    }
+  };
+
+  // Wrap task data into the format expected by existing components
+  const buildTask=(et)=>{
+    if(et.type==='chat'){
+      return{id:'exam-chat',type:'chat',clientId:'elena',
+        data:{scenes:et.scenes},
+        reward:{money:0,xp:0,rep:0},title:et.title
+      };
+    }
+    if(et.type==='write'){
+      return{id:`exam-write-${et.step}`,type:'write',clientId:'elena',
+        data:{brief:et.brief,task:et.task,minLength:et.minLength,rubric:et.rubric,exampleAnswer:et.exampleAnswer},
+        reward:{money:0,xp:0,rep:0},title:et.title,icon:et.icon
+      };
+    }
+    if(et.type==='video_edit'){
+      return{id:'exam-video',type:'video_edit',clientId:'elena',
+        data:{brief:et.brief,clips:et.clips,reqs:et.reqs,minDur:et.minDur,maxDur:et.maxDur},
+        reward:{money:0,xp:0,rep:0},title:et.title
+      };
+    }
+  };
+
+  // Results
+  if(step===5){
+    const avgQuality=scores.reduce((s,x)=>s+x.quality,0)/scores.length;
+    const pct=Math.round(avgQuality*100);
+    const grade=getGrade(pct);
+    const skillScores=[
+      {label:'Переговоры',icon:'💬',score:Math.round((scores[0]?.quality||0)*10)},
+      {label:'Стратегия',icon:'📝',score:Math.round((scores[1]?.quality||0)*10)},
+      {label:'Контент-план',icon:'📋',score:Math.round((scores[2]?.quality||0)*10)},
+      {label:'Монтаж',icon:'🎬',score:Math.round((scores[3]?.quality||0)*10)},
+      {label:'Экспертность',icon:'🎓',score:Math.min(10,Math.round(avgQuality*12))},
+      {label:'Готовность к работе',icon:'🚀',score:pct>=70?8:pct>=55?6:4},
+    ];
+    const today=new Date().toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'});
+    return(
+      <div style={{flex:1,overflow:'auto',padding:mob?16:32,display:'flex',flexDirection:'column',alignItems:'center',gap:24}} className="scroll-y">
+        {showCert&&<Certificate playerName={gs.playerName} grade={grade} pct={pct} skillScores={skillScores} date={today} onClose={()=>setShowCert(false)}/>}
+        <div className="pop-in" style={{textAlign:'center',maxWidth:700,width:'100%'}}>
+          <div style={{fontSize:72,marginBottom:12,animation:'float 3s ease-in-out infinite'}}>{grade.emoji}</div>
+          <h1 style={{fontSize:34,fontWeight:900,color:'#fff',marginBottom:6}}>Экзамен завершён!</h1>
+          <div style={{fontSize:18,color:grade.color,fontWeight:700,marginBottom:4}}>Оценка: {grade.label} · {grade.title}</div>
+          <div style={{fontSize:14,color:'#64748b',marginBottom:32}}>{grade.desc}</div>
+
+          {/* Score breakdown */}
+          <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(2,1fr)',gap:12,marginBottom:28}}>
+            {scores.map((s,i)=>{
+              const et=EXAM_TASKS[i];
+              const sc=Math.round(s.quality*100);
+              return(
+                <div key={i} className="card" style={{padding:16,display:'flex',alignItems:'center',gap:12}}>
+                  <span style={{fontSize:32}}>{et.icon}</span>
+                  <div style={{flex:1,textAlign:'left'}}>
+                    <div style={{fontSize:13,fontWeight:700,color:'#fff',marginBottom:4}}>{et.title}</div>
+                    <div style={{height:6,borderRadius:3,background:'rgba(255,255,255,.08)',overflow:'hidden'}}>
+                      <div style={{height:'100%',borderRadius:3,width:sc+'%',
+                        background:sc>=80?'#34d399':sc>=60?'#fbbf24':'#f87171',transition:'width .8s ease'}}/>
+                    </div>
+                    <div style={{fontSize:12,color:'#64748b',marginTop:4}}>{sc}%</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Total */}
+          <div style={{background:`rgba(124,58,237,.12)`,border:'2px solid #7c3aed',borderRadius:16,padding:'24px 40px',marginBottom:28,display:'inline-block'}}>
+            <div style={{fontSize:64,fontWeight:900,color:grade.color,lineHeight:1}}>{pct}%</div>
+            <div style={{fontSize:16,color:'#a78bfa',fontWeight:700,marginTop:4}}>Итоговый балл</div>
+          </div>
+
+          {/* Skills */}
+          <div style={{display:'grid',gridTemplateColumns:mob?'repeat(2,1fr)':'repeat(3,1fr)',gap:10,marginBottom:28}}>
+            {skillScores.map((s,i)=>(
+              <div key={i} className="card" style={{padding:12,textAlign:'center'}}>
+                <div style={{fontSize:24,marginBottom:4}}>{s.icon}</div>
+                <div style={{fontSize:12,color:'#94a3b8',marginBottom:4}}>{s.label}</div>
+                <div style={{fontSize:20,fontWeight:800,color:s.score>=7?'#34d399':s.score>=5?'#fbbf24':'#f87171'}}>{s.score}/10</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
+            <button className="btn btn-primary" style={{padding:'14px 32px',fontSize:15}} onClick={()=>setShowCert(true)}>
+              📜 Получить сертификат
+            </button>
+            <button className="btn btn-secondary" style={{padding:'14px 24px',fontSize:15}} onClick={onFinish}>
+              🏠 Вернуться в офис
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Intro
+  if(step===0){
+    return(
+      <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:mob?16:40,overflow:'auto',background:'radial-gradient(ellipse at 50% 30%,rgba(124,58,237,.15) 0%,transparent 60%)'}}>
+        <div className="pop-in" style={{textAlign:'center',maxWidth:600}}>
+          <div style={{fontSize:64,marginBottom:16}} className="float-anim">🎓</div>
+          <h1 style={{fontSize:32,fontWeight:900,color:'#fff',marginBottom:8}}>Финальный экзамен</h1>
+          <p style={{color:'#64748b',fontSize:15,marginBottom:8}}>Новый клиент — реальная задача</p>
+
+          <div className="card" style={{padding:20,margin:'20px 0',textAlign:'left',borderColor:'rgba(251,191,36,.2)'}}>
+            <div style={{display:'flex',gap:14,alignItems:'center',marginBottom:14}}>
+              <span style={{fontSize:40}}>{EXAM_CLIENT.emoji}</span>
+              <div>
+                <div style={{fontSize:18,fontWeight:700,color:'#fff'}}>{EXAM_CLIENT.name}</div>
+                <div style={{fontSize:14,color:'#fbbf24'}}>{EXAM_CLIENT.company}</div>
+                <div style={{fontSize:12,color:'#64748b'}}>{EXAM_CLIENT.niche}</div>
+              </div>
+            </div>
+            <div style={{fontSize:13,color:'#94a3b8',lineHeight:1.6}}>
+              Елена только открыла пекарню в центре города. У неё красивое заведение и вкусная выпечка, но о ней никто не знает. Она пришла к тебе за помощью.
+            </div>
+          </div>
+
+          <div style={{display:'flex',flexDirection:'column',gap:8,marginBottom:28,textAlign:'left'}}>
+            {EXAM_TASKS.map((t,i)=>(
+              <div key={i} style={{display:'flex',gap:10,alignItems:'center',padding:'10px 14px',background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.07)',borderRadius:10}}>
+                <span style={{fontSize:20}}>{t.icon}</span>
+                <div>
+                  <div style={{fontSize:13,fontWeight:600,color:'#fff'}}>Задание {i+1}: {t.title}</div>
+                  <div style={{fontSize:11,color:'#4b5563'}}>{t.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{display:'flex',gap:12,justifyContent:'center'}}>
+            <button className="btn btn-primary" style={{padding:'14px 36px',fontSize:15}} onClick={()=>setStep(1)}>
+              🚀 Начать экзамен
+            </button>
+            <button className="btn btn-secondary" style={{padding:'14px 20px',fontSize:13}} onClick={onBack}>
+              Назад
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Active task (steps 1-4)
+  const et=EXAM_TASKS[step-1];
+  const builtTask=buildTask(et);
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      {/* Exam progress bar */}
+      <div style={{padding:'8px 20px',borderBottom:'1px solid rgba(124,58,237,.2)',background:'rgba(124,58,237,.06)',flexShrink:0,display:'flex',alignItems:'center',gap:16}}>
+        <span style={{fontSize:12,fontWeight:700,color:'#a78bfa',flexShrink:0}}>🎓 ЭКЗАМЕН</span>
+        <div style={{flex:1,display:'flex',gap:4}}>
+          {EXAM_TASKS.map((t,i)=>(
+            <div key={i} style={{flex:1,height:6,borderRadius:3,
+              background:i<step-1?'#7c3aed':i===step-1?'rgba(124,58,237,.5)':'rgba(255,255,255,.07)'}}>
+            </div>
+          ))}
+        </div>
+        <span style={{fontSize:12,color:'#64748b',flexShrink:0}}>Задание {step}/{EXAM_TASKS.length}</span>
+      </div>
+      {/* Task content */}
+      <div style={{flex:1,display:'flex',overflow:'hidden'}}>
+        {et.type==='chat'&&(
+          <ChatScreen key={currentTaskKey}
+            tasks={[{...builtTask,clientId:'elena'}]}
+            onComplete={(_,q)=>handleTaskComplete(q)}
+            onBack={()=>{}}
+            onFlag={()=>{}}
+            examClients={[EXAM_CLIENT]}
+          />
+        )}
+        {et.type==='write'&&(
+          <WriteTask key={currentTaskKey}
+            task={builtTask}
+            onComplete={(_,q)=>handleTaskComplete(q)}
+            onBack={()=>{}}
+            onFlag={()=>{}}
+          />
+        )}
+        {et.type==='video_edit'&&(
+          <VideoEditor key={currentTaskKey}
+            task={builtTask}
+            onComplete={(_,q)=>handleTaskComplete(q)}
+            onBack={()=>{}}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+const CONSEQUENCES={
+  marina_strategy_chat:(score)=>score>=7
+    ?{type:'good',icon:'😊',from:'Марина',msg:`Марина написала: «Спасибо за чёткий разговор! Уже жду результатов 🙏» — репутация растёт.`}
+    :{type:'warn',icon:'😕',from:'Марина',msg:`Марина написала: «Осталось ощущение неуверенности с вашей стороны. Надеюсь на лучшее...» — клиент сомневается.`},
+  marina_strategy_quality:(score)=>score>=7
+    ?{type:'good',icon:'🎯',from:'Марина',msg:`Марина: «Получила стратегию — всё чётко, по делу! Покажу партнёру». Новый клиент может прийти по рекомендации.`}
+    :{type:'warn',icon:'⚠️',from:'Марина',msg:`Марина: «Стратегия немного общая... Ждала больше конкретики по срокам и форматам». Доверие снизилось.`},
+  marina_content_plan_quality:(score)=>score>=7
+    ?{type:'good',icon:'✅',from:'Марина',msg:`Марина одобрила контент-план! Написала «Супер, всё понятно — начинайте!» +10 к репутации.`}
+    :{type:'bad',icon:'😠',from:'Марина',msg:`Марина: «Контент-план слишком размытый. Переделайте — нет хуков и CTA». Клиент теряет терпение.`},
+  dmitry_budget_chat:(score)=>score>=7
+    ?{type:'good',icon:'🤝',from:'Дмитрий',msg:`Дмитрий: «Отличный разговор! Готов подписать договор на 3 месяца».`}
+    :{type:'warn',icon:'🤔',from:'Дмитрий',msg:`Дмитрий: «Подумаем... Смотрим ещё пару агентств». Сделка под угрозой.`},
+  alina_reels_quality:(score)=>score>=7
+    ?{type:'good',icon:'💫',from:'Алина',msg:`Алина: «Обожаю эти идеи! Можно сразу в работу. Порекомендую тебя подруге» — скоро придёт новый клиент!`}
+    :{type:'warn',icon:'😐',from:'Алина',msg:`Алина: «Идеи немного шаблонные... Ожидала более творческого подхода».`},
+};
+
+// ─── MAIN APP ────────────────────────────────────────────────────
+const App=()=>{
+  const [started,setStarted]=useState(()=>!!localStorage.getItem(SAVE_KEY));
+  const [showSaveModal,setShowSaveModal]=useState(false);
+  const [loadCode,setLoadCode]=useState('');
+  const [loadError,setLoadError]=useState('');
+  const [gs,setGs]=useState(loadState);
+  const [screen,setScreen]=useState('office');
+  const [zoneId,setZoneId]=useState(null);
+  const [activeTask,setActiveTask]=useState(null);
+  const [completedIds,setCompletedIds]=useState(new Set(gs.completedTasks||[]));
+  const [consequences,setConsequences]=useState([]); // [{id, consequence, seen}]
+
+  useEffect(()=>saveState(gs),[gs]);
+
+  const availTasks=ALL_TASKS.filter(t=>!completedIds.has(t.id));
+  const completedTasks=ALL_TASKS.filter(t=>completedIds.has(t.id));
+
+  const nav=(s)=>{setScreen(s);setActiveTask(null);};
+
+  const openZone=(id)=>{
+    if(id==='shop'){setScreen('shop');return;}
+    if(id==='exam'){setScreen('exam');return;}
+    setZoneId(id);setScreen('zone');
+  };
+
+  const startTask=(t)=>{setActiveTask(t);setScreen('task');};
+
+  // Called by tasks that have consequenceFlag
+  const handleFlag=(flag,score)=>{
+    const gen=CONSEQUENCES[flag];
+    if(!gen)return;
+    const consequence=gen(score);
+    // Show after a delay (simulate "next day" effect)
+    setTimeout(()=>{
+      setConsequences(prev=>[...prev,{id:Date.now(),consequence,score}]);
+    },3000);
+    setGs(g=>({...g,flags:{...(g.flags||{}), [flag]:score}}));
+  };
+
+  const dismissConsequence=(id)=>{
+    setConsequences(prev=>prev.filter(c=>c.id!==id));
+  };
+
+  const completeTask=(t,quality=1)=>{
+    const money=Math.round(t.reward.money*quality);
+    const xp=Math.round(t.reward.xp*quality);
+    const rep=Math.round(t.reward.rep*(quality>0.5?quality:0.3));
+    setGs(g=>{
+      const newXp=g.xp+xp;
+      const newLevel=LEVELS.findIndex(l=>newXp<l.next)+1||LEVELS.length;
+      return{...g,money:g.money+money,xp:newXp,rep:g.rep+rep,
+        level:newLevel,
+        day:g.day+1,
+        completedTasks:[...(g.completedTasks||[]),t.id]};
+    });
+    setCompletedIds(s=>new Set([...s,t.id]));
+    setScreen(zoneId?'zone':'tasks');
+    setActiveTask(null);
+  };
+
+  if(!started){
+    return(
+      <NotifProvider>
+        <Intro onStart={(name)=>{setGs(g=>({...g,playerName:name}));setStarted(true);}}/>
+      </NotifProvider>
+    );
+  }
+
+  const getSaveCode=()=>btoa(unescape(encodeURIComponent(JSON.stringify(gs))));
+  const applyLoadCode=(code)=>{
+    try{
+      const parsed=JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+      if(!parsed.playerName)throw new Error('invalid');
+      setGs({...defaultState(),...parsed});
+      setCompletedIds(new Set(parsed.completedTasks||[]));
+      localStorage.setItem(SAVE_KEY,JSON.stringify(parsed));
+      setStarted(true);
+      setLoadCode('');setLoadError('');setShowSaveModal(false);
+    }catch(e){setLoadError('Неверный код. Проверь и попробуй снова.');}
+  };
+
+  return(
+    <NotifProvider>
+      {showSaveModal&&(
+        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,.7)',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}>
+          <div className="card pop-in" style={{width:'min(480px,95vw)',padding:28,display:'flex',flexDirection:'column',gap:18}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <div style={{fontSize:18,fontWeight:800,color:'#fff'}}>💾 Сохранение / Загрузка</div>
+              <button className="btn btn-secondary" style={{padding:'4px 10px'}} onClick={()=>{setShowSaveModal(false);setLoadError('');setLoadCode('');}}>✕</button>
+            </div>
+            <div>
+              <div style={{fontSize:12,color:'#64748b',marginBottom:8}}>Твой код сохранения — скопируй и сохрани:</div>
+              <div style={{background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.1)',borderRadius:10,padding:12,fontSize:11,color:'#a78bfa',wordBreak:'break-all',fontFamily:'monospace',maxHeight:100,overflow:'auto'}}>
+                {getSaveCode()}
+              </div>
+              <button className="btn btn-primary" style={{marginTop:8,width:'100%'}} onClick={()=>{navigator.clipboard?.writeText(getSaveCode()).then(()=>alert('Скопировано!')).catch(()=>{});}}>
+                📋 Скопировать код
+              </button>
+            </div>
+            <div style={{borderTop:'1px solid rgba(255,255,255,.07)',paddingTop:16}}>
+              <div style={{fontSize:12,color:'#64748b',marginBottom:8}}>Загрузить прогресс — вставь код сюда:</div>
+              <textarea className="game-textarea" style={{minHeight:80,fontSize:11,fontFamily:'monospace'}}
+                placeholder="Вставь код сохранения..." value={loadCode}
+                onChange={e=>{setLoadCode(e.target.value);setLoadError('');}}/>
+              {loadError&&<div style={{color:'#f87171',fontSize:12,marginTop:4}}>{loadError}</div>}
+              <button className="btn btn-primary" style={{marginTop:8,width:'100%'}} disabled={!loadCode.trim()}
+                onClick={()=>applyLoadCode(loadCode)}>
+                🔄 Загрузить прогресс
+              </button>
+            </div>
+            <div style={{fontSize:11,color:'#374151',textAlign:'center'}}>На том же устройстве прогресс сохраняется автоматически</div>
+          </div>
+        </div>
+      )}
+      <GameUI
+        gs={gs} screen={screen} zoneId={zoneId}
+        activeTask={activeTask} availTasks={availTasks} completedTasks={completedTasks}
+        consequences={consequences}
+        nav={nav} openZone={openZone} startTask={startTask}
+        completeTask={completeTask} handleFlag={handleFlag}
+        dismissConsequence={dismissConsequence} setGs={setGs}
+        onShowSave={()=>setShowSaveModal(true)}
+      />
+    </NotifProvider>
+  );
+};
+
+// ─── GAME UI (inside NotifProvider so useNotif works) ─────────────
+const GameUI=({gs,screen,zoneId,activeTask,availTasks,completedTasks,consequences,
+  nav,openZone,startTask,completeTask,handleFlag,dismissConsequence,setGs,onShowSave})=>{
+  const notify=useNotif();
+  return(
+    <>
+      <Hud gs={gs} screen={screen} onNav={nav} onShowSave={onShowSave}/>
+      {/* Consequence popups */}
+      {consequences.map(c=>(
+        <div key={c.id} className="slide-up" style={{
+          position:'fixed',top:70,right:20,zIndex:900,minWidth:300,maxWidth:380,
+          background:c.consequence.type==='good'?'rgba(16,185,129,.12)':c.consequence.type==='bad'?'rgba(220,38,38,.12)':'rgba(251,191,36,.1)',
+          border:`1px solid ${c.consequence.type==='good'?'rgba(16,185,129,.35)':c.consequence.type==='bad'?'rgba(220,38,38,.35)':'rgba(251,191,36,.3)'}`,
+          borderRadius:14,padding:'14px 16px',backdropFilter:'blur(12px)',boxShadow:'0 10px 40px rgba(0,0,0,.5)',
+        }}>
+          <div style={{display:'flex',gap:10,alignItems:'flex-start'}}>
+            <span style={{fontSize:26,flexShrink:0}}>{c.consequence.icon}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:11,fontWeight:700,color:'#64748b',marginBottom:4}}>
+                📩 {c.consequence.from} — последствие предыдущей задачи
+              </div>
+              <div style={{fontSize:13,color:'#e2e8f0',lineHeight:1.5}}>{c.consequence.msg}</div>
+            </div>
+            <button onClick={()=>dismissConsequence(c.id)} style={{background:'none',border:'none',color:'#4b5563',cursor:'pointer',fontSize:16,padding:'0 4px',flexShrink:0}}>✕</button>
+          </div>
+        </div>
+      ))}
+      <div style={{flex:1,display:'flex',overflow:'hidden'}}>
+        {screen==='office'&&<Office gs={gs} tasks={availTasks} onNav={openZone}/>}
+        {screen==='tasks'&&<TaskBoard tasks={availTasks} completedTasks={completedTasks} onStart={startTask}/>}
+        {screen==='zone'&&zoneId&&(
+          <ZoneScreen zoneId={zoneId} tasks={availTasks} onStartTask={startTask} onBack={()=>nav('office')}/>
+        )}
+        {screen==='task'&&activeTask&&(
+          <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+            <div style={{padding:'8px 16px',borderBottom:'1px solid rgba(255,255,255,.06)',display:'flex',alignItems:'center',gap:10,flexShrink:0}}>
+              <button className="btn btn-secondary" style={{padding:'5px 12px',fontSize:12}} onClick={()=>nav(zoneId?'zone':'tasks')}>← Назад</button>
+              <span style={{fontSize:13,color:'#64748b'}}>{activeTask.icon} {activeTask.title}</span>
+              {activeTask.week&&<span style={{fontSize:11,background:'rgba(124,58,237,.15)',color:'#a78bfa',border:'1px solid rgba(124,58,237,.25)',borderRadius:6,padding:'2px 8px'}}>Неделя {activeTask.week}</span>}
+            </div>
+            <TaskLauncher task={activeTask} gs={gs} onComplete={completeTask} onBack={()=>nav(zoneId?'zone':'tasks')} onFlag={handleFlag}/>
+          </div>
+        )}
+        {screen==='shop'&&<Shop gs={gs} setGs={setGs}/>}
+        {screen==='exam'&&<ExamScreen gs={gs} onFinish={()=>nav('office')} onBack={()=>nav('office')}/>}
+      </div>
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
