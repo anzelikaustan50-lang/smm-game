@@ -176,41 +176,116 @@ function fly(img) {
     { transform: `translate(${dx}px,${dy}px) scale(.12) rotate(-200deg)`, opacity: .2 }], { duration: 800, easing: 'cubic-bezier(.5,0,.3,1)' });
   an.onfinish = () => c.remove();
 }
+/* ---- доставка ---- */
+const DL = window.DELIVERY;
+let dlv = store.get('cm_dlv', { city: '', method: '' });
+let apiQuotes = null;
+const cartWeight = () => 0.1 + Object.entries(cart).reduce((w, [id, q]) => w + (byId(id).col === 'system' ? (id === 'instrument' ? 0.35 : 0.12) : 0.03) * q, 0);
+function currentQuotes() {
+  if (!dlv.city) return [];
+  return apiQuotes && apiQuotes.city === dlv.city ? apiQuotes.list : DL.quotes(dlv.city, cartWeight(), S.warehouseCity);
+}
+function isFree(q, sub) { return q && sub >= S.freeShippingFrom && (S.freeFor || []).includes(q.key); }
+function selectedQuote() { return currentQuotes().find(q => q.key === dlv.method) || null; }
 function totals() {
-  const sub = cartSub(), ship = sub >= S.freeShippingFrom || !sub ? 0 : S.shippingFlat;
-  return { sub, ship, total: sub + ship };
+  const sub = cartSub(), q = selectedQuote();
+  const ship = q ? (isFree(q, sub) ? 0 : q.price) : 0;
+  return { sub, ship, total: sub + ship, quote: q };
+}
+function saveDlv() { store.set('cm_dlv', dlv); }
+async function loadApiQuotes() {
+  if (!S.deliveryApi || !dlv.city || !cartCount()) return;
+  try {
+    const r = await fetch(S.deliveryApi, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ city: dlv.city, weight: cartWeight(), sum: cartSub() }) });
+    const j = await r.json();
+    if (Array.isArray(j.options)) { apiQuotes = { city: dlv.city, list: j.options }; renderCart(); }
+  } catch (e) { /* остаётся расчёт по зонам */ }
+}
+function dlvHTML() {
+  const sub = cartSub(), qs = currentQuotes(), c = DL.findCity(dlv.city);
+  const head = `<section class="dlv">
+    <h4>Доставка по всей России</h4>
+    <div class="city-wrap">
+      <input id="dCity" placeholder="Начните вводить город" autocomplete="off" value="${esc(dlv.city)}" aria-label="Город доставки">
+      <div class="city-sug" id="dSug"></div>
+    </div>`;
+  if (!dlv.city) return head + `<p class="dhint">Укажите город: сразу покажем стоимость и срок СДЭК, ПЭК и Почты России.</p></section>`;
+  const a = qs[0], hub = S.warehouseCity || 'Москва';
+  const route = `<div class="route"><span>${esc(hub)}</span><i><b></b></i><span>${esc(dlv.city)}</span></div>
+    <p class="dnote">${c ? `Примерно ${a.km} км от склада.` : 'Города нет в списке, поэтому считаем по средней зоне. Точную цену подтвердим при заказе.'} Это предварительный расчёт.</p>`;
+  const opts = qs.map(q => {
+    const free = isFree(q, sub), on = dlv.method === q.key;
+    return `<button class="dopt ${on ? 'on' : ''}" data-method="${q.key}" aria-pressed="${on}">
+      <span class="dc">${esc(q.carrier)}</span>
+      <span class="dt"><b>${esc(q.title)}</b><small>${esc(q.note)}</small></span>
+      <span class="dp">${free ? '<em>Бесплатно</em>' : money(q.price)}<small>${DL.daysText(q.daysMin, q.daysMax)}</small></span>
+    </button>`;
+  }).join('');
+  return head + route + `<div class="dopts">${opts}</div></section>`;
 }
 function renderCart() {
   const ids = Object.keys(cart), t = totals();
   const left = S.freeShippingFrom - t.sub;
   $('#ship').innerHTML = !ids.length ? '' : (left > 0
-    ? `Добавьте ещё на <b>${money(left)}</b> до бесплатной доставки`
-    : `<b>Бесплатная доставка включена</b>`) +
+    ? `Добавьте ещё на <b>${money(left)}</b> до бесплатной доставки в пункт выдачи`
+    : `<b>Бесплатная доставка в пункт выдачи включена</b>`) +
     `<div class="bar"><i style="width:${Math.min(100, t.sub / S.freeShippingFrom * 100)}%"></i></div>`;
-  $('#cartBody').innerHTML = !ids.length
-    ? `<div class="cart-empty">${ico('bag')}<p>В корзине пока пусто</p><button class="btn btn-primary" data-close data-goto="#catalog">Выбрать украшения</button></div>`
-    : ids.map(id => { const p = byId(id), q = cart[id]; return `
+  const body = $('#cartBody'), keepFocus = document.activeElement && document.activeElement.id === 'dCity';
+  if (!ids.length) {
+    body.innerHTML = `<div class="cart-empty">${ico('bag')}<p>В корзине пока пусто</p><button class="btn btn-primary" data-close data-goto="#catalog">Выбрать украшения</button></div>`;
+  } else {
+    body.innerHTML = ids.map(id => { const p = byId(id), q = cart[id]; return `
       <div class="li" data-id="${id}">
         <img src="${p.img}" alt="">
         <div><b>${esc(p.name)}</b><small>${esc(p.collection)} · ${esc(p.code)}</small>
           <div class="qty"><button data-dec aria-label="Меньше">${ico('minus')}</button><span>${q}</span><button data-inc aria-label="Больше">${ico('plus')}</button></div></div>
         <div><div class="sum">${money(p.price * q)}</div><button class="rm" data-rm>Удалить</button></div>
-      </div>`; }).join('');
+      </div>`; }).join('') + dlvHTML();
+    if (keepFocus) { const i = $('#dCity'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
+  }
+  const sel = t.quote;
   $('#cartFoot').innerHTML = !ids.length ? '' : `
     <div class="sumrow"><span>Товары (${cartCount()})</span><span>${money(t.sub)}</span></div>
-    <div class="sumrow"><span>Доставка</span><span>${t.ship ? money(t.ship) : 'Бесплатно'}</span></div>
+    <div class="sumrow"><span>Доставка${sel ? ', ' + esc(sel.carrier) : ''}</span><span>${sel ? (t.ship ? money(t.ship) : 'Бесплатно') : 'выберите способ'}</span></div>
     <div class="sumrow total"><span>Итого</span><b>${money(t.total)}</b></div>
-    <button class="btn btn-primary" id="goCheckout">Оформить заказ ${ico('arrow')}</button>`;
+    <button class="btn btn-primary" id="goCheckout" ${sel ? '' : 'disabled'}>${sel ? 'Оформить заказ' : 'Выберите доставку'} ${ico('arrow')}</button>`;
 }
+function pickCity(name) {
+  const c = DL.findCity(name);
+  dlv.city = c ? c[0] : String(name).trim();
+  if (!dlv.city) return;
+  const qs = currentQuotes();
+  if (!qs.some(q => q.key === dlv.method)) dlv.method = (qs.reduce((m, q) => (!m || q.price < m.price ? q : m), null) || {}).key || '';
+  saveDlv(); apiQuotes = null; renderCart(); loadApiQuotes();
+  setTimeout(() => { const d = $('.dlv'); if (d) d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
+}
+$('#cartBody').addEventListener('input', e => {
+  if (e.target.id !== 'dCity') return;
+  const box = $('#dSug'), list = DL.suggest(e.target.value);
+  box.innerHTML = list.map(c => `<button type="button" data-city="${esc(c[0])}"><b>${esc(c[0])}</b><small>${esc(c[1])}</small></button>`).join('');
+  box.classList.toggle('open', list.length > 0);
+});
+$('#cartBody').addEventListener('focusin', e => {
+  if (e.target.id !== 'dCity') return;
+  const box = $('#dSug'), list = DL.suggest(e.target.value);
+  box.innerHTML = list.map(c => `<button type="button" data-city="${esc(c[0])}"><b>${esc(c[0])}</b><small>${esc(c[1])}</small></button>`).join('');
+  box.classList.toggle('open', list.length > 0);
+});
+$('#cartBody').addEventListener('keydown', e => {
+  if (e.target.id === 'dCity' && e.key === 'Enter') { e.preventDefault(); const f = $('#dSug button'); pickCity(f && e.target.value.trim() && DL.findCity(e.target.value) === null ? f.dataset.city : e.target.value); }
+});
 $('#cartBody').addEventListener('click', e => {
+  const cb = e.target.closest('[data-city]'); if (cb) { pickCity(cb.dataset.city); return; }
+  const m = e.target.closest('[data-method]'); if (m) { dlv.method = m.dataset.method; saveDlv(); renderCart(); return; }
   const li = e.target.closest('.li'); if (!li) return; const id = li.dataset.id;
   if (e.target.closest('[data-inc]')) cart[id] = Math.min(99, cart[id] + 1);
   else if (e.target.closest('[data-dec]')) { cart[id]--; if (cart[id] < 1) delete cart[id]; }
   else if (e.target.closest('[data-rm]')) delete cart[id];
   else return;
-  saveCart();
+  apiQuotes = null; saveCart(); loadApiQuotes();
 });
-$('#cartFoot').addEventListener('click', e => { if (e.target.closest('#goCheckout')) { closeDrawer(); openCheckout(); } });
+document.addEventListener('click', e => { if (!e.target.closest('.city-wrap')) $$('.city-sug').forEach(b => b.classList.remove('open')); });
+$('#cartFoot').addEventListener('click', e => { if (e.target.closest('#goCheckout') && selectedQuote()) { closeDrawer(); openCheckout(); } });
 function openDrawer() { const d = $('#cart'); d.classList.add('open'); d.setAttribute('aria-hidden', 'false'); lock(true); setTimeout(() => $('[data-close].icon-btn', d).focus(), 50); }
 function closeDrawer() { const d = $('#cart'); d.classList.remove('open'); d.setAttribute('aria-hidden', 'true'); lock(false); }
 $('#cartBtn').addEventListener('click', openDrawer);
@@ -447,34 +522,42 @@ const STEPS = [
 
 /* ---------------- оформление заказа ---------------- */
 function openCheckout() {
-  if (!cartCount()) return;
-  const t = totals();
-  const items = Object.entries(cart).map(([id, q]) => `${esc(byId(id).name)} × ${q}`).join('<br>');
+  if (!cartCount() || !selectedQuote()) return;
+  const t = totals(), q = t.quote;
+  const items = Object.entries(cart).map(([id, n]) => `<div class="sumrow"><span>${esc(byId(id).name)} × ${n}</span><span>${money(byId(id).price * n)}</span></div>`).join('');
   $('#coBody').innerHTML = `
-    <h3>Оформление заказа</h3><p class="sub">Оставьте контакты. Мы подтвердим состав, сроки и стоимость доставки.</p>
+    <h3>Оформление заказа</h3><p class="sub">Заполните данные получателя. Мы подтвердим заказ и точную стоимость доставки.</p>
     <form id="coForm" novalidate>
+      <div class="co-ship"><div><small>Доставка</small><b>${esc(q.title)}</b><span>${esc(dlv.city)}, ${DL.daysText(q.daysMin, q.daysMax)}</span></div>
+        <button type="button" class="link" id="coChange">Изменить</button></div>
+      <p class="co-h">Получатель</p>
+      <div class="three">
+        <label class="field"><span>Фамилия*</span><input name="surname" required placeholder="Иванова" autocomplete="family-name"></label>
+        <label class="field"><span>Имя*</span><input name="name" required placeholder="Анна" autocomplete="given-name"></label>
+        <label class="field"><span>Отчество</span><input name="patronymic" placeholder="Сергеевна" autocomplete="additional-name"></label>
+      </div>
       <div class="two">
-        <label class="field"><span>Имя*</span><input name="name" required placeholder="Анна" autocomplete="name"></label>
         <label class="field"><span>Телефон*</span><input name="phone" required placeholder="+7 (___) ___-__-__" inputmode="tel" autocomplete="tel"></label>
-      </div>
-      <div class="two">
         <label class="field"><span>E-mail</span><input name="email" type="email" placeholder="you@mail.ru" autocomplete="email"></label>
-        <label class="field"><span>Город*</span><input name="city" required placeholder="Москва" autocomplete="address-level2"></label>
       </div>
+      <label class="field"><span>${esc(q.key === 'cdek_pvz' ? 'Пункт выдачи' : q.key === 'pek' ? 'Терминал или адрес' : 'Адрес доставки')}*</span>
+        <input name="address" required placeholder="${esc(q.addr)}" autocomplete="street-address"></label>
+      <label class="field"><span>Комментарий</span><textarea name="comment" placeholder="Удобное время, пожелания"></textarea></label>
+      <p class="co-h">Оплата</p>
       <div class="opts">
-        <label class="opt"><input type="radio" name="ship" value="Курьер" checked><div>Курьер<small>до двери</small></div></label>
-        <label class="opt"><input type="radio" name="ship" value="Пункт выдачи"><div>Пункт выдачи<small>рядом с домом</small></div></label>
-        <label class="opt"><input type="radio" name="ship" value="Почта России"><div>Почта России<small>по всей стране</small></div></label>
+        <label class="opt"><input type="radio" name="pay" value="Картой онлайн" checked><div>Картой онлайн<small>Visa, Mir, Mastercard</small></div></label>
+        <label class="opt"><input type="radio" name="pay" value="СБП"><div>СБП<small>по QR-коду</small></div></label>
+        <label class="opt"><input type="radio" name="pay" value="При получении"><div>При получении<small>наличными или картой</small></div></label>
       </div>
-      <label class="field"><span>Комментарий</span><textarea name="comment" placeholder="Адрес, удобное время, пожелания"></textarea></label>
-      <div class="co-sum"><div style="font-size:13.5px;color:var(--muted)">${items}</div>
-        <div class="sumrow"><span>Доставка</span><span>${t.ship ? money(t.ship) : 'Бесплатно'}</span></div>
+      <div class="co-sum">${items}
+        <div class="sumrow"><span>Доставка, ${esc(q.carrier)}</span><span>${t.ship ? money(t.ship) : 'Бесплатно'}</span></div>
         <div class="sumrow total"><span>Итого</span><b>${money(t.total)}</b></div></div>
       <button class="btn btn-primary" style="width:100%" type="submit">Подтвердить заказ ${ico('arrow')}</button>
-      <p class="agree">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</p>
+      <p class="agree">Нажимая кнопку, вы соглашаетесь на обработку персональных данных. Оплату подтвердит менеджер после звонка.</p>
     </form>`;
   openModal($('#checkout'));
   const f = $('#coForm'), ph = f.phone;
+  $('#coChange').onclick = () => { closeModal($('#checkout')); openDrawer(); };
   ph.addEventListener('input', () => {
     let d = ph.value.replace(/\D/g, ''); if (d[0] === '8') d = '7' + d.slice(1); if (d && d[0] !== '7') d = '7' + d; d = d.slice(0, 11);
     const p = [d.slice(1, 4), d.slice(4, 7), d.slice(7, 9), d.slice(9, 11)];
@@ -482,16 +565,17 @@ function openCheckout() {
   });
   f.addEventListener('submit', e => {
     e.preventDefault();
-    const bad = [f.name, f.city].find(i => !i.value.trim()) || (ph.value.replace(/\D/g, '').length < 11 ? ph : null);
+    const bad = [f.surname, f.name, f.address].find(i => !i.value.trim()) || (ph.value.replace(/\D/g, '').length < 11 ? ph : null);
     if (bad) { bad.focus(); bad.style.borderColor = 'var(--rose)'; toast('Проверьте поля формы'); return; }
     finishOrder(Object.fromEntries(new FormData(f)));
   });
 }
 function finishOrder(data) {
-  const t = totals(), no = 'CM-' + Date.now().toString().slice(-6);
-  const lines = Object.entries(cart).map(([id, q]) => ({ code: byId(id).code, name: byId(id).name, qty: q, price: byId(id).price }));
-  const order = { no, date: new Date().toISOString(), ...data, items: lines, ...t };
-  const text = `Заказ ${no}\n${lines.map(l => `${l.code} ${l.name} × ${l.qty} = ${l.price * l.qty} ${S.currency}`).join('\n')}\nИтого: ${t.total} ${S.currency} (доставка ${t.ship})\n\n${data.name}, ${data.phone}\n${data.city}, ${data.ship}${data.comment ? '\n' + data.comment : ''}`;
+  const t = totals(), q = t.quote, no = 'CM-' + Date.now().toString().slice(-6);
+  const fio = [data.surname, data.name, data.patronymic].filter(Boolean).join(' ');
+  const lines = Object.entries(cart).map(([id, n]) => ({ code: byId(id).code, name: byId(id).name, qty: n, price: byId(id).price }));
+  const order = { no, date: new Date().toISOString(), fio, ...data, city: dlv.city, delivery: q.title, carrier: q.carrier, days: DL.daysText(q.daysMin, q.daysMax), items: lines, sub: t.sub, ship: t.ship, total: t.total };
+  const text = `Заказ ${no}\n${lines.map(l => `${l.code} ${l.name} × ${l.qty} = ${l.price * l.qty} ${S.currency}`).join('\n')}\nТовары: ${t.sub} ${S.currency}\nДоставка: ${q.title}, ${DL.daysText(q.daysMin, q.daysMax)}, ${t.ship} ${S.currency}\nИтого: ${t.total} ${S.currency}\nОплата: ${data.pay}\n\n${fio}\n${data.phone}${data.email ? ', ' + data.email : ''}\n${dlv.city}, ${data.address}${data.comment ? '\n' + data.comment : ''}`;
   const orders = store.get('cm_orders', []); orders.push(order); store.set('cm_orders', orders);
   if (S.orderWebhook) fetch(S.orderWebhook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) }).catch(() => {});
   cart = {}; saveCart();
@@ -499,7 +583,7 @@ function finishOrder(data) {
   $('#coBody').innerHTML = `<div class="co-done">
     <div class="ok">${ico('check')}</div>
     <h3>Спасибо за заказ!</h3>
-    <p class="sub">Номер заказа <b>${no}</b>. Мы свяжемся с вами по телефону ${esc(data.phone)} и подтвердим детали.</p>
+    <p class="sub">Номер заказа <b>${no}</b>. ${esc(fio)}, мы позвоним по номеру ${esc(data.phone)}, подтвердим состав и доставку в ${esc(dlv.city)}.</p>
     <div class="acts">
       ${wa ? `<a class="btn btn-primary" href="${wa}" target="_blank" rel="noopener">Отправить в WhatsApp</a>` : ''}
       ${S.telegram ? `<a class="btn ${wa ? 'btn-ghost' : 'btn-primary'}" href="${S.telegram}" target="_blank" rel="noopener">Написать в Telegram</a>` : ''}
