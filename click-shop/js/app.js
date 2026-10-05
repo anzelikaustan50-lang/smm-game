@@ -71,9 +71,9 @@ function bindGrid(el) {
 /* ---------------- collections ---------------- */
 function renderCols() {
   $('#cols').innerHTML = COLS.map(c => `
-    <a class="col tilt" href="#catalog" data-filter="${c.id}">
+    <a class="col" href="#catalog" data-filter="${c.id}">
       <div class="ring"><img src="${c.cover}" alt="" loading="lazy"></div>
-      <b>${c.name}</b><span>${c.sub}</span><i class="glare"></i>
+      <div class="txt"><b>${c.name}</b><span>${c.sub}</span></div>${ico('arrow', 'arr')}<i class="glare"></i>
     </a>`).join('');
 }
 
@@ -343,7 +343,7 @@ $$('#nav a').forEach(a => a.addEventListener('click', () => { $('#nav').classLis
 
 /* ---------------- waves (фирменный фон) ---------------- */
 (() => {
-  const svg = $('#waves'); let d = '';
+  const svg = $('#waves'); if (!svg) return; let d = '';
   for (let i = 0; i < 22; i++) {
     const y = 120 + i * 18, a = 40 + i * 3.2, ph = i * .22;
     let p = `M0 ${y}`;
