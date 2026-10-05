@@ -43,7 +43,7 @@ function cardHTML(p, i = 0) {
   return `<article class="card pop" data-id="${p.id}" style="animation-delay:${Math.min(i, 14) * 40}ms">
     <div class="card-img ${p.col === 'system' ? 'sys' : ''}" data-open>
       ${badgeHTML(p)}
-      <img src="${p.img}" alt="${esc(p.name)}" loading="lazy" width="320" height="300">
+      <img src="${p.img}" alt="${esc(p.name)}" loading="lazy" width="320" height="300"><i class="glint"></i>
       <button class="fav ${on ? 'on' : ''}" data-fav aria-label="В избранное" aria-pressed="${on}">${ico('heart')}</button>
     </div>
     <div class="card-body">

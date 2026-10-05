@@ -550,3 +550,43 @@ select{height:44px;border-radius:99px;border:1px solid var(--line);background:#0
 .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .co-sum .sumrow span:first-child{max-width:70%}
 @media (max-width:700px){.three{grid-template-columns:1fr}.dopt{grid-template-columns:minmax(0,1fr) auto}.dc{grid-column:1/-1;justify-self:start}}
+
+/* ===== v4: первый экран на всю ширину ===== */
+.hero{padding:0}
+.hero-3d{position:absolute;inset:0;height:auto;min-height:0;z-index:0}
+.hero-3d canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:pan-y;display:block}
+.hero-3d::before,.hero-3d::after{content:"";position:absolute;left:0;right:0;pointer-events:none;z-index:1}
+.hero-3d::before{top:0;height:70px;background:linear-gradient(var(--bg),transparent)}
+.hero-3d::after{bottom:0;height:220px;background:linear-gradient(transparent,var(--bg))}
+.hero-bg{display:none}
+.hero-3d .chip{z-index:2}
+.hero-copy{position:relative;z-index:3;max-width:620px}
+.hero-in{grid-template-columns:minmax(0,1fr);min-height:calc(100vh - 110px);min-height:calc(100svh - 110px);max-height:900px;padding-block:40px}
+.hero-3d .c1{left:auto;right:6%;bottom:16%}.hero-3d .c2{right:2%;top:14%}
+.hero-3d .hint{z-index:2;bottom:18px}
+/* запасной вариант без WebGL: красивая сцена на CSS */
+.hero-3d.no-gl{background:radial-gradient(55% 60% at 72% 48%,rgba(79,208,220,.22),transparent 70%),radial-gradient(35% 45% at 70% 55%,rgba(230,198,128,.2),transparent 70%),var(--bg)}
+.hero-3d.no-gl .fallback{display:block;position:absolute;inset:0;perspective:1200px}
+.fallback .fb-light{position:absolute;right:6%;top:8%;width:46%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.12),rgba(79,208,220,.1) 50%,transparent 70%);filter:blur(2px)}
+.fallback img{position:absolute;filter:drop-shadow(0 40px 40px rgba(0,0,0,.7));animation:fbfloat 7s ease-in-out infinite}
+.fallback .fb-main{right:8%;top:22%;width:44%;transform:rotateY(-16deg) rotateX(6deg)}
+.fallback .fb-a{right:4%;top:12%;width:11%;animation-delay:-2s}
+.fallback .fb-b{right:44%;top:68%;width:10%;animation-delay:-4s}
+.fallback .fb-c{right:10%;top:70%;width:11%;animation-delay:-1s}
+@keyframes fbfloat{50%{translate:0 -16px}}
+@media (max-width:980px){
+  .hero-in{min-height:0;max-height:none;padding-block:0 30px}
+  .hero-3d{position:relative;inset:auto;height:460px;margin:0 -16px}
+  .hero-3d::after{height:120px}
+  .hero-copy{max-width:none}
+  .hero-3d.no-gl .fb-main{width:70%;right:14%;top:18%}
+}
+
+/* ===== v4: витрина товаров ===== */
+.card-img{background:radial-gradient(75% 62% at 50% 26%,rgba(230,198,128,.32),transparent 72%),radial-gradient(60% 40% at 50% 100%,rgba(79,208,220,.14),transparent 70%),linear-gradient(180deg,#112b33,#07161b)}
+.card-img::after{left:50%;bottom:10%;width:62%;height:10%;background:radial-gradient(closest-side,rgba(230,198,128,.28),transparent);filter:blur(6px)}
+.card-img img{width:68%;height:68%;margin-top:-6%;-webkit-box-reflect:below -2px linear-gradient(transparent 58%,rgba(255,255,255,.2))}
+.card-img.sys img{width:80%;height:80%}
+.card-img .glint{position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.16) 50%,transparent 60%);transform:translateX(-120%);transition:transform .9s var(--ease);pointer-events:none}
+.card:hover .glint{transform:translateX(120%)}
+.col .ring{background:radial-gradient(circle at 30% 25%,#3a7a88,#0b2229 72%)}
